@@ -255,8 +255,98 @@ public class Compiler {
             nextToken();
         }
     }
+    
+    /*
+    	Expr ::= AndExpr [ "||" AndExpr ]
+    */
+    
+    private void expr() {
+    	andExpr();
+    	nextToken();
+    	
+    	if(token == Symbol.OR) {
+    		andExpr();
+    	}
+    }
+    
+    /*
+     	AndExpr ::= RelExpr [ "&&" RelExpr ]
+    */
 
-    private void error(String msg) {
+    private void andExpr() {
+		relExpr();
+		nextToken();
+		
+		if(token == Symbol.AND) {
+			relExpr();
+    	}
+	}
+    
+    /*
+    	RelExpr ::= AddExpr [ RelOp AddExpr ]
+    */
+    
+	private void relExpr() {
+		addExpr();
+		nextToken();
+		
+		if(token == Symbol.MENOR || token == Symbol.MAIOR || token == Symbol.MENOR_IGUAL || 
+				token == Symbol.MAIOR_IGUAL || token == Symbol.IGUAL || token == Symbol.DIFERENTE) {
+			addExpr();
+		}
+	}
+	
+	/*
+		AddExpr ::= MultExpr { AddOp MultExpr }
+	*/
+
+	private void addExpr() {
+		multExpr();
+		nextToken();
+		
+		while(token == Symbol.MAIS || token == Symbol.MENOS ) {
+			multExpr();
+		}
+	}
+	
+	/*
+		MultExpr ::= SimpleExpr { MultOp SimpleExpr }
+	*/
+
+	private void multExpr() {
+		simpleExpr();
+		nextToken();
+		
+		while(token == Symbol.MULTIPLICACAO || token == Symbol.DIVISAO || token == Symbol.MOD) {
+			simpleExpr();
+		}
+	}
+	
+	/*
+		SimpleExpr ::= Number | ’(’ Expr ’)’ | "!" SimpleExpr | AddOp SimpleExpr | Ident
+	*/
+	
+	private void simpleExpr() {
+		
+		if(token == Symbol.NUMBER) {
+			number();
+		} else if(token == Symbol.ABRE_PARANTESES) {
+			expr();
+			if(token != Symbol.FECHA_PARENTESES) {
+				error("')' esperado");
+			}
+		} else if(token == Symbol.EXCLAMACAO) {
+			simpleExpr();
+		} else if(token == Symbol.MAIS || token == Symbol.MENOS) {
+			simpleExpr();
+		} else if(token == Symbol.IDENT) {
+			
+		} else {
+			error("simpleExpr esperado");
+		}	
+	}
+
+	private void error(String msg) {
         if ( tokenPos == 0 )
           tokenPos = 1;
         else
