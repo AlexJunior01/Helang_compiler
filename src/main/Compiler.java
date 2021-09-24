@@ -2,8 +2,28 @@ package main;
 
 import lexer.Symbol;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
+
+import ast.AddExpr;
+import ast.AndExpr;
+import ast.AssignStat;
+import ast.Expr;
+import ast.ForStat;
+import ast.IfStat;
+import ast.MultExpr;
+import ast.Numero;
+import ast.PrintStat;
+import ast.PrintlnStat;
+import ast.Program;
+import ast.RelExpr;
+import ast.SimpleExpr;
+import ast.Stat;
+import ast.StatList;
+import ast.VarList;
+import ast.WhileStat;
 
 /* 
    		Program ::= VarList { Stat }
@@ -23,12 +43,12 @@ import java.util.Map;
 		RelExpr ::= AddExpr [ RelOp AddExpr ]
 		AddExpr ::= MultExpr { AddOp MultExpr }
 		MultExpr ::= SimpleExpr { MultOp SimpleExpr }
-		SimpleExpr ::= Number | ï¿½(ï¿½ Expr ï¿½)ï¿½ | "!" SimpleExpr
-		| AddOp SimpleExpr
-		RelOp ::= ï¿½<ï¿½ | ï¿½<=ï¿½ | ï¿½>ï¿½ | ï¿½>=ï¿½| ï¿½==ï¿½ | ï¿½!=ï¿½
-		AddOp ::= ï¿½+ï¿½| ï¿½-ï¿½
-		MultOp ::= ï¿½*ï¿½ | ï¿½/ï¿½ | ï¿½%ï¿½
-		Number ::= [ï¿½+ï¿½|ï¿½-ï¿½] Digit { Digit }
+		SimpleExpr ::= Number |’(’ Expr ’)’ | "!" SimpleExpr
+		| AddOp SimpleExpr | Ident
+		RelOp ::= ’<’ | ’<=’ | ’>’ | ’>=’| ’==’ | ’!=’
+		AddOp ::=  ’+’| ’-’
+		MultOp ::= ’*’ | ’/’ | ’%’
+		Number ::=  [’+’|’-’] Digit { Digit }
 
  */
 
@@ -208,73 +228,84 @@ public class Compiler {
     /*
         Program ::= VarList { Stat }
     */
-    private void program() {
-        varlist();
+    private Program program() {
+        VarList varlist = varlist();
+        
+        List<Stat> stat = new ArrayList<>();
 
         while(token != Symbol.EOF) {
-            stat();
+            stat.add(stat());
         }
+        return new Program(varlist, stat);
     }
 
     /*
         Stat ::= AssignStat | IfStat | ForStat | PrintStat |
             		PrintlnStat | WhileStat
-     */
-    private void stat() {
+    */
+    
+    private Stat stat() {
         if(token == Symbol.IDENT) {
-            assignStat();
+            return assignStat();
         } else if(token == Symbol.IF) {
-            ifStat();
+            return ifStat();
         } else if(token == Symbol.FOR) {
-            forStat();
+            return forStat();
         } else if(token == Symbol.PRINT) {
-            printStat();
+            return printStat();
         } else if(token == Symbol.PRINTLN) {
-            printlnStat();
+        	return printlnStat();
         } else if(token == Symbol.WHILE) {
-            whileStat();
+        	return whileStat();
         } else {
             error("Stat esperado");
+            return null;
         }
     }
 
-    private void whileStat() {
+    private WhileStat whileStat() {
         nextToken();
 
-        expr();
-        statList();
+        Expr expr = expr();
+        StatList statList = statList();
+        
+        return new WhileStat(expr, statList);
     }
 
     /*
         PrintlnStat ::= "println" Expr ";"
-     */
-    private void printlnStat() {
+    */
+    private PrintlnStat printlnStat() {
         nextToken();
-        expr();
+        Expr expr = expr();
 
         if(token != Symbol.PONTO_VIRGULA) {
             error("';' esperado");
         }
         nextToken();
+        
+        return new PrintlnStat(expr);
     }
 
     /*
         PrintStat ::= "print" Expr ";"
-     */
-    private void printStat() {
+    */
+    private PrintStat printStat() {
         nextToken();
-        expr();
+        Expr expr = expr();
 
         if(token != Symbol.PONTO_VIRGULA) {
             error("';' esperado");
         }
         nextToken();
+        
+        return new PrintStat(expr);
     }
 
     /*
-        ForStat ::= "for" Id "in" Expr ".." Expr StatList
-     */
-    private void forStat() {
+        ForStat ::= "for" Ident "in" Expr ".." Expr StatList
+    */
+    private ForStat forStat() {
         nextToken();
 
         if(token != Symbol.IDENT) {
@@ -288,36 +319,42 @@ public class Compiler {
         }
         nextToken();
 
-        expr();
+        Expr startExpr = expr();
         if(token != Symbol.DOIS_PONTOS) {
             error("'..' esperado");
         }
         nextToken();
 
-        expr();
-        statList();
+        Expr endExpr = expr();
+        StatList statlist = statList();
+        
+        return new ForStat(iterador, startExpr, endExpr, statlist);
     }
 
     /*
         IfStat ::= "if" Expr StatList [
                     "else" StatList ]
      */
-    private void ifStat() {
+    private IfStat ifStat() {
         nextToken();
-        expr();
-
-        statList();
+        Expr expr = expr();
+        
+        StatList elseStatList = null;
+        
+        StatList ifStatList = statList();
 
         if (token == Symbol.ELSE) {
             nextToken();
-            statList();
+            elseStatList = statList();
         }
+        
+        return new IfStat(expr, ifStatList, elseStatList);
     }
 
     /*
         StatList ::= "{" { Stat } "}"
-     */
-    private void statList() {
+    */
+    private StatList statList() {
         if(token != Symbol.ABRE_CHAVES) {
             error("'{' esperado");
         }
@@ -326,12 +363,13 @@ public class Compiler {
             stat();
         }
         nextToken();
+        return null;
     }
 
     /*
         AssignStat ::= Ident "=" Expr ";"
-     */
-    private void assignStat() {
+    */
+    private AssignStat assignStat() {
         String ident = stringValue;
         nextToken();
 
@@ -340,17 +378,20 @@ public class Compiler {
         }
         nextToken();
 
-        expr();
+        Expr expr = expr();
         if (token != Symbol.PONTO_VIRGULA) {
             error("';' esperado");
         }
         nextToken();
+        
+        return new AssignStat(ident, expr);
     }
 
     /*
         VarList ::= { "var" Int Ident ";" }
-     */
-    private void varlist() {
+    */
+    private VarList varlist() {
+    	List<String> identList = new ArrayList<>();
         while (token == Symbol.VAR) {
             nextToken();
 
@@ -362,6 +403,9 @@ public class Compiler {
             if(token != Symbol.IDENT) {
                 error("Identificador de variÃ¡vel esperado.");
             }
+            String ident = stringValue;
+            identList.add(ident);
+            
             nextToken();
 
             if(token != Symbol.PONTO_VIRGULA) {
@@ -369,106 +413,147 @@ public class Compiler {
             }
             nextToken();
         }
+        return new VarList(identList);
     }
     
     /*
     	Expr ::= AndExpr [ "||" AndExpr ]
     */
-    private void expr() {
-    	andExpr();
+    private Expr expr() {
+    	AndExpr secondAndExpr = null;
+    	AndExpr firstAndExpr = andExpr();
 
     	if(token == Symbol.OR) {
             nextToken();
-    		andExpr();
+            secondAndExpr = andExpr();
     	}
+    	
+    	return new Expr(firstAndExpr, secondAndExpr);
     }
     
     /*
      	AndExpr ::= RelExpr [ "&&" RelExpr ]
     */
-    private void andExpr() {
-		relExpr();
+    private AndExpr andExpr() {
+    	RelExpr secondRel = null;
+    	RelExpr firstRelExpr = relExpr();
 		
 		if(token == Symbol.AND) {
             nextToken();
-			relExpr();
+            secondRel = relExpr();
     	}
+		
+		return new AndExpr(firstRelExpr, secondRel);
 	}
     
     /*
     	RelExpr ::= AddExpr [ RelOp AddExpr ]
     */
     
-	private void relExpr() {
-		addExpr();
+	private RelExpr relExpr() {
+		AddExpr secondAddExpr = null;
+		Symbol relOp = null;
+		AddExpr firstAddExpr = addExpr();
 		
 		if(token == Symbol.MENOR || token == Symbol.MAIOR || token == Symbol.MENOR_IGUAL || 
 				token == Symbol.MAIOR_IGUAL || token == Symbol.IGUAL || token == Symbol.DIFERENTE) {
+			
+			relOp = token;
             nextToken();
-			addExpr();
+            secondAddExpr = addExpr();
 		}
+		
+		return new RelExpr(firstAddExpr, relOp, secondAddExpr);
 	}
 	
 	/*
 		AddExpr ::= MultExpr { AddOp MultExpr }
 	*/
-	private void addExpr() {
-		multExpr();
+	private AddExpr addExpr() {
+		MultExpr secondMultExpr = null;
+		Symbol addOp = null;
+		MultExpr firstMultExpr = multExpr();
 		
 		while(token == Symbol.MAIS || token == Symbol.MENOS ) {
+			addOp = token;
             nextToken();
-			multExpr();
+            secondMultExpr = multExpr();
 		}
+		
+		return new AddExpr(firstMultExpr, addOp, secondMultExpr);
 	}
 	
 	/*
 		MultExpr ::= SimpleExpr { MultOp SimpleExpr }
 	*/
-	private void multExpr() {
-		simpleExpr();
+	private MultExpr multExpr() {
+		SimpleExpr secondSimpleExpr = null;
+		Symbol multOp = null;
+		SimpleExpr firstSimpleExpr = simpleExpr();
 		
 		while(token == Symbol.MULTIPLICACAO || token == Symbol.DIVISAO || token == Symbol.MOD) {
+			multOp = token;
             nextToken();
-			simpleExpr();
+            secondSimpleExpr = simpleExpr();
 		}
+		
+		return new MultExpr(firstSimpleExpr, multOp, secondSimpleExpr);
 	}
 	
 	/*
 		SimpleExpr ::= Number | ï¿½(ï¿½ Expr ï¿½)ï¿½ | "!" SimpleExpr | AddOp SimpleExpr | Ident
 	*/
 	
-	private void simpleExpr() {
+	private SimpleExpr simpleExpr() {
 		
-		if(token == Symbol.NUMBER) {
-			number();
+		Numero number = null;
+	    Expr expr = null;
+	    SimpleExpr simpleExpr = null;
+	    Symbol addOp = null;
+	    String ident = null;
+		
+	    
+	    if(token == Symbol.NUMBER) {
+	    	number = number(addOp);
 		} else if(token == Symbol.ABRE_PARANTESES) {
             nextToken();
-			expr();
+            expr = expr();
 			if(token != Symbol.FECHA_PARENTESES) {
 				error("')' esperado");
 			}
             nextToken();
 		} else if(token == Symbol.EXCLAMACAO) {
             nextToken();
-			simpleExpr();
+            simpleExpr = simpleExpr();
 		} else if(token == Symbol.MAIS || token == Symbol.MENOS) {
+			addOp = token;
             nextToken();
-			simpleExpr();
+            
+            if(token == Symbol.NUMBER) {
+            	number = number(addOp);
+            } else {
+            	simpleExpr = simpleExpr();
+            }
 		} else if(token == Symbol.IDENT) {
-			String ident = this.stringValue;
+			ident = this.stringValue;
             nextToken();
 		} else {
 			error("simpleExpr esperado");
-		}	
+		}
+	    
+    	return new SimpleExpr(number, expr, simpleExpr, addOp, ident);
 	}
 
-    private void number() {
+    private Numero number(Symbol addOp) {
+    	
         if(token == Symbol.MAIS || token == Symbol.MENOS) {
             nextToken();
         }
 
         int numero = numberValue;
         nextToken();
+        
+        return new Numero(numero, addOp);
     }
 
     private void error(String msg) {
