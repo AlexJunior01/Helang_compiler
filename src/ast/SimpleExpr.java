@@ -2,8 +2,10 @@ package ast;
 
 import lexer.Symbol;
 
+import java.util.Map;
+
 /*
-		SimpleExpr ::= Number |’(’ Expr ’)’ | "!" SimpleExpr
+		SimpleExpr ::= Number |ï¿½(ï¿½ Expr ï¿½)ï¿½ | "!" SimpleExpr
 		| AddOp SimpleExpr | Ident
 	*/
 
@@ -23,4 +25,32 @@ public class SimpleExpr {
 		this.addOp = addOp;
 		this.ident = ident;
 	}
+
+    public int eval(Map<String, Integer> memory) {
+		int resultado;
+
+		if (number != null) {
+			return number.eval(memory);
+		} else if (expr != null) {
+			return expr.eval(memory);
+		} else if (addOp != null) {
+			resultado = simpleExpr.eval(memory);
+			if(addOp == Symbol.MENOS)
+				return resultado*(-1);
+			return resultado;
+		} else if (simpleExpr != null) {
+			resultado =  simpleExpr.eval(memory);
+			if (resultado != 0)
+				return 0;
+
+			return 1;
+		} else if (ident != null) {
+			if (memory.get(ident) == null) {
+				throw new RuntimeException("VariÃ¡vel " + ident + " nÃ£o declarada.");
+			}
+			return memory.get(ident);
+		} else {
+			throw new RuntimeException("Erro interno dentro do SimpleExpre");
+		}
+    }
 }

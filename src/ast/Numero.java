@@ -2,8 +2,10 @@ package ast;
 
 import lexer.Symbol;
 
+import java.util.Map;
+
 /*
-		Number ::=  [’+’|’-’] Digit { Digit }
+		Number ::=  [ï¿½+ï¿½|ï¿½-ï¿½] Digit { Digit }
 	 */
 
 public class Numero {
@@ -14,5 +16,12 @@ public class Numero {
 		super();
 		this.digit = digit;
 		this.addOp = addOp;
+	}
+
+	public int eval(Map<String, Integer> memory) {
+		if (addOp == Symbol.MENOS)
+			return -digit;
+
+		return digit;
 	}
 }

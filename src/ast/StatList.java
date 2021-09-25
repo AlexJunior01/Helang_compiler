@@ -1,6 +1,7 @@
 package ast;
 
 import java.util.List;
+import java.util.Map;
 
 /*
 		StatList ::= "{" { Stat } "}"
@@ -14,4 +15,9 @@ public class StatList {
 		this.stat = stat;
 	}
 
+    public void eval(Map<String, Integer> memory) {
+    	for(Stat oneStat : stat) {
+			oneStat.eval(memory);
+		}
+	}
 }

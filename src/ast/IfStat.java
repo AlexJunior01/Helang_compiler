@@ -1,6 +1,8 @@
 package ast;
 
-	/*
+import java.util.Map;
+
+/*
 		IfStat ::= "if" Expr StatList [
 		"else" StatList ]
 	*/
@@ -14,5 +16,16 @@ public class IfStat extends Stat {
 		this.expr = expr;
 		this.ifStatList = ifStatList;
 		this.elseStatList = elseStatList;
+	}
+
+	@Override
+	public void eval(Map<String, Integer> memory) {
+		int e = expr.eval(memory);
+
+		if (e != 0) {
+			ifStatList.eval(memory);
+		} else if (elseStatList != null){
+			elseStatList.eval(memory);
+		}
 	}
 }

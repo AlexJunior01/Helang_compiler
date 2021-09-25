@@ -1,5 +1,7 @@
 package main;
 
+import ast.Program;
+
 public class Main {
 	
 	public static void main( String []args ) {
@@ -26,9 +28,25 @@ public class Main {
 				"}\n" +
 				"println soma;\n" +
 				"println somaFor; ").toCharArray();
-        
+
+//        char[] input = ("var Int soma;\n" +
+//				"var Int resto;\n" +
+//				"resto = 15;\n" +
+//				"soma = resto + 15;\n" +
+//				"while resto < soma {\n" +
+//				"if resto%2 == 0{\n" +
+//				"println resto*soma;\n" +
+//				"}\n" +
+//				"resto = resto + 5;\n" +
+//				"}\n" +
+//				"println resto;\n" ).toCharArray();
+
         Compiler compiler = new Compiler();
 
-        compiler.compile(input);
+        Program p = compiler.compile(input);
+
+		p.eval();
+
+
     }
 }

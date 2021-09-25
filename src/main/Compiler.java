@@ -43,12 +43,12 @@ import ast.WhileStat;
 		RelExpr ::= AddExpr [ RelOp AddExpr ]
 		AddExpr ::= MultExpr { AddOp MultExpr }
 		MultExpr ::= SimpleExpr { MultOp SimpleExpr }
-		SimpleExpr ::= Number |’(’ Expr ’)’ | "!" SimpleExpr
+		SimpleExpr ::= Number |ï¿½(ï¿½ Expr ï¿½)ï¿½ | "!" SimpleExpr
 		| AddOp SimpleExpr | Ident
-		RelOp ::= ’<’ | ’<=’ | ’>’ | ’>=’| ’==’ | ’!=’
-		AddOp ::=  ’+’| ’-’
-		MultOp ::= ’*’ | ’/’ | ’%’
-		Number ::=  [’+’|’-’] Digit { Digit }
+		RelOp ::= ï¿½<ï¿½ | ï¿½<=ï¿½ | ï¿½>ï¿½ | ï¿½>=ï¿½| ï¿½==ï¿½ | ï¿½!=ï¿½
+		AddOp ::=  ï¿½+ï¿½| ï¿½-ï¿½
+		MultOp ::= ï¿½*ï¿½ | ï¿½/ï¿½ | ï¿½%ï¿½
+		Number ::=  [ï¿½+ï¿½|ï¿½-ï¿½] Digit { Digit }
 
  */
 
@@ -214,16 +214,17 @@ public class Compiler {
         }
 	}
 	
-    public void compile( char []p_input ) {
+    public Program compile( char []p_input ) {
         input = p_input;
         tokenPos = 0;
         input[input.length - 1] = '\0';
         nextToken();
-        program();
-//        int result = expr();
+        Program p = program();
+
         if ( token != Symbol.EOF )
           error("Final do arquivo nï¿½o encontrado");
-//        return result;
+
+        return p;
     }
     /*
         Program ::= VarList { Stat }
@@ -355,15 +356,16 @@ public class Compiler {
         StatList ::= "{" { Stat } "}"
     */
     private StatList statList() {
+        List<Stat> stats = new ArrayList<>();
         if(token != Symbol.ABRE_CHAVES) {
             error("'{' esperado");
         }
         nextToken();
         while(token != Symbol.FECHA_CHAVES){
-            stat();
+            stats.add(stat());
         }
         nextToken();
-        return null;
+        return new StatList(stats);
     }
 
     /*
@@ -487,14 +489,14 @@ public class Compiler {
 		MultExpr ::= SimpleExpr { MultOp SimpleExpr }
 	*/
 	private MultExpr multExpr() {
-		SimpleExpr secondSimpleExpr = null;
-		Symbol multOp = null;
+		List<SimpleExpr> secondSimpleExpr = new ArrayList<>();
+		List<Symbol> multOp = new ArrayList<>();
 		SimpleExpr firstSimpleExpr = simpleExpr();
 		
 		while(token == Symbol.MULTIPLICACAO || token == Symbol.DIVISAO || token == Symbol.MOD) {
-			multOp = token;
+			multOp.add(token);
             nextToken();
-            secondSimpleExpr = simpleExpr();
+            secondSimpleExpr.add(simpleExpr());
 		}
 		
 		return new MultExpr(firstSimpleExpr, multOp, secondSimpleExpr);

@@ -1,10 +1,11 @@
 package ast;
 
 import java.util.List;
+import java.util.Map;
 
 /*
-		VarList ::= { "var" Int Ident ";" }
-	*/
+    VarList ::= { "var" Int Ident ";" }
+*/
 public class VarList {
 	private List<String> ident;
 
@@ -12,4 +13,10 @@ public class VarList {
 		super();
 		this.ident = ident;
 	}
-}
+
+		public void eval(Map<String, Integer> memory) {
+			for (String identificador : ident) {
+				memory.put(identificador, 0);
+			}
+		}
+	}
