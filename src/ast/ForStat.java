@@ -32,7 +32,7 @@ public class ForStat extends Stat {
 		if (memory.get(this.ident) != null)
 			throw new RuntimeException("Variavel " + this.ident + "já foi declarada.");
 
-		for (int i = start; i < end; i++) {
+		for (int i = start; i <= end; i++) {
 			memory.put(this.ident, i);
 			this.statlist.eval(memory);
 		}
@@ -44,8 +44,8 @@ public class ForStat extends Stat {
 	public void genC() {
 		System.out.print("for(int " + ident + " = " + startExpr.genC() +  "; " + ident);
 		System.out.println(" < " + endExpr.genC() + "; " + ident + "++) {");
-		
-		startExpr.genC();
+
+		statlist.genC();
 		
 		System.out.println("}");
 	}

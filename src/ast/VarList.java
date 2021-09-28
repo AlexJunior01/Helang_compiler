@@ -25,7 +25,7 @@ public class VarList {
 
 		public void genC() {
 			for(String identificador: ident) {
-				System.out.println("Int " + identificador + ";");
+				System.out.println("int " + identificador + ";");
 			}
 	
 		}
