@@ -2,53 +2,62 @@ package main;
 
 import ast.Program;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+
 public class Main {
 	
 	public static void main( String []args ) {
-        char []input = ("var Int i;\n" +
-				"var Int soma;\n" +
-				"var Int somaFor;\n" +
-				"var Int n;\n" +
-				"var Int verd;\n" +
-				"n = 100;\n" +
-				"soma = 0;\n" +
-				"i = 0;\n" +
-				"verd = 2;\n" +
-				"while i < n && !!verd { \n" +
-				"  if i%2 == (0+0*0/1) {\n" +
-				"\tsoma = (--soma) + i*i;\n" +
-				"  }\n" +
-				"  i = i + 1;\n" +
-				"}\n" +
-				"somaFor = 0;\n" +
-				"for k in 0..100 {\n" +
-				"  if i%2 == 0 {\n" +
-				"\tsomaFor = somaFor + k*k;\n" +
-				"  }\n" +
-				"}\n" +
-				"println soma;\n" +
-				"println somaFor; ").toCharArray();
+		File file;
+		FileReader stream;
+		int numChRead;
+		String option = args[0];
 
-//        char[] input = ("var Int soma;\n" +
-//				"var Int resto;\n" +
-//				"resto = 15;\n" +
-//				"soma = resto + 15;\n" +
-//				"while resto < soma {\n" +
-//				"if resto%2 == 0{\n" +
-//				"println resto*soma;\n" +
-//				"}\n" +
-//				"resto = resto + 5;\n" +
-//				"}\n" +
-//				"println resto;\n" ).toCharArray();
+		if ( args.length > 1 ){
+			file = new File(args[1]);
+			if (!file.exists() || !file.canRead()) {
+				System.out.println("Either the file " + args[1] + " does not exist or it cannot be read");
+				throw new RuntimeException();
+			}
+			try {
+				stream = new FileReader(file);
+			} catch (FileNotFoundException e) {
+				System.out.println("Something wrong: file does not exist anymore");
+				throw new RuntimeException();
+			}
+			// one more character for '\0' at the end that will be added by the
+			// compiler
+			char[] input = new char[(int) file.length() + 1];
 
-        Compiler compiler = new Compiler();
+			try {
+				numChRead = stream.read(input, 0, (int) file.length());
+			} catch (IOException e) {
+				System.out.println("Error reading file " + args[0]);
+				throw new RuntimeException();
+			}
 
-        Program p = compiler.compile(input);
-        
-        p.eval();
-		
-		p.genC();
-		
-        
+			if (numChRead != file.length()) {
+				System.out.println("Read error");
+				throw new RuntimeException();
+			}
+			try {
+				stream.close();
+			} catch (IOException e) {
+				System.out.println("Error in handling the file " + args[0]);
+				throw new RuntimeException();
+			}
+
+
+			Compiler compiler = new Compiler();
+			Program p = compiler.compile(input);
+
+			if (option.equals("-gen")){
+				p.genC();
+			} else if (option.equals("-run")) {
+				p.run(true);
+			}
+		}
     }
 }

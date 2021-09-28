@@ -16,6 +16,9 @@ public class VarList {
 
 		public void eval(Map<String, Integer> memory) {
 			for (String identificador : ident) {
+				if(memory.get(identificador) != null)
+					throw new RuntimeException("Variavel ja declarada.");
+
 				memory.put(identificador, 0);
 			}
 		}

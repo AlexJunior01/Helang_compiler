@@ -16,8 +16,9 @@ public class PrintStat extends Stat {
 	@Override
 	public void eval(Map<String, Integer> memory) {
 		int e = expr.eval(memory);
-
-		System.out.print(e);
+		if(memory.get("PRINT_ON_EVAL") != null){
+			System.out.print(e);
+		}
 	}
 
 	@Override

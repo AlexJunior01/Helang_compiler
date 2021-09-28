@@ -26,11 +26,11 @@ public class ForStat extends Stat {
 		int end = this.endExpr.eval(memory);
 		
 		if(end < start) {
-			throw new RuntimeException("A segunda express�o do 'for' deve ser maior ou igual a primeira!");
+			throw new RuntimeException("A segunda expressao do 'for' deve ser maior ou igual a primeira!");
 		}
 
 		if (memory.get(this.ident) != null)
-			throw new RuntimeException("Variável " + this.ident + "já foi declarada.");
+			throw new RuntimeException("Variavel " + this.ident + "já foi declarada.");
 
 		for (int i = start; i < end; i++) {
 			memory.put(this.ident, i);

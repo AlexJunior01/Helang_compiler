@@ -32,7 +32,7 @@ public class AddExpr {
 		int lengthExprs = secondMultExpr.size();
 		
 		if (lengthaddOp != lengthExprs)
-			throw new RuntimeException("Número de operadores diferente do número de expressões");
+			throw new RuntimeException("Numero de operadores diferente do numero de expressoes");
 
 		resultado = first;
 		
@@ -58,7 +58,7 @@ public class AddExpr {
 		int lengthExprs = secondMultExpr.size();
 		
 		if (lengthaddOp != lengthExprs)
-			throw new RuntimeException("Número de operadores diferente do número de expressões");
+			throw new RuntimeException("Numero de operadores diferente do numero de expressoes");
 		
 		for (int i = 0; i < lengthaddOp; i++) {
 			if(addOp.get(i) != Symbol.MAIS && addOp.get(i) != Symbol.MENOS) {
