@@ -1,37 +1,46 @@
 package lexer;
 
 public enum Symbol {
-	EOF,
-	IDENT,
-    NUMBER,
-	VAR,
-	INT, 
-	PONTO_VIRGULA,
-	ATRIBUICAO, 
-	IF, 
-	ELSE, 
-	FOR, 
-	IN,
-	DOIS_PONTOS,
-	PRINT,
-	PRINTLN,
-	ABRE_CHAVES,
-	FECHA_CHAVES,
-	WHILE,
-	OR,
-	AND, 
-	ABRE_PARANTESES,
-	FECHA_PARENTESES,
-	EXCLAMACAO,
-	MENOR,
-	MENOR_IGUAL,
-	MAIOR,
-	MAIOR_IGUAL,
-	IGUAL,
-	DIFERENTE,
-	MAIS,
-	MENOS,
-	MULTIPLICACAO,
-	DIVISAO, 
-	MOD	
+	EOF("eof"),
+	IDENT("ident"),
+    NUMBER("Number"),
+	VAR("Var"),
+	INT("Int"), 
+	PONTO_VIRGULA(";"),
+	ATRIBUICAO("="), 
+	IF("if"), 
+	ELSE("else"), 
+	FOR("for"), 
+	IN("in"),
+	DOIS_PONTOS(".."),
+	PRINT("print"),
+	PRINTLN("println"),
+	ABRE_CHAVES("{"),
+	FECHA_CHAVES("}"),
+	WHILE("while"),
+	OR("||"),
+	AND("&&"), 
+	ABRE_PARANTESES("("),
+	FECHA_PARENTESES(")"),
+	EXCLAMACAO("!"),
+	MENOR("<"),
+	MENOR_IGUAL("<="),
+	MAIOR(">"),
+	MAIOR_IGUAL(">="),
+	IGUAL("=="),
+	DIFERENTE("!="),
+	MAIS("+"),
+	MENOS("-"),
+	MULTIPLICACAO("*"),
+	DIVISAO("/"), 
+	MOD("%");
+	
+    Symbol(String name) {
+        this.nome = name;
+    }
+	
+    @Override
+	public String toString() { return nome; }
+    
+    public String nome;
 }
