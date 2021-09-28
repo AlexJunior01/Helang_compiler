@@ -29,4 +29,14 @@ public class AndExpr {
 
 		return first;
     }
+
+	public String genC() {
+		String firstString = this.firstRelExpr.genC();
+		
+		if (this.secondRelExpr != null) {
+			firstString = firstString + " && " + this.secondRelExpr.genC();
+		}
+		
+		return firstString;
+	}
 }

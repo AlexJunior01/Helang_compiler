@@ -44,9 +44,11 @@ public class Main {
         Compiler compiler = new Compiler();
 
         Program p = compiler.compile(input);
-
-		p.eval();
-
-
+        
+        p.eval();
+		
+		p.genC();
+		
+        
     }
 }

@@ -10,10 +10,26 @@ import java.util.Map;
 
 public class Program {
 	
+	private VarList varlist;
+	private List<Stat> stat;
+	
 	public Program(VarList varlist, List<Stat> stat) {
 			super();
 			this.varlist = varlist;
 			this.stat = stat;
+	}
+	
+	public void genC() {
+		 System.out.println("#include <stdio.h>\n");
+	     System.out.println("void main() {");
+	     
+	     this.varlist.genC();
+	     
+	     for(Stat oneStat: stat) {
+	    	 oneStat.genC();
+	     }
+	     
+	     System.out.println("\n}\n");
 	}
 
 	public void eval() {
@@ -25,7 +41,4 @@ public class Program {
 			oneStat.eval(memory);
 		}
 	}
-	
-	private VarList varlist;
-	private List<Stat> stat;
 }

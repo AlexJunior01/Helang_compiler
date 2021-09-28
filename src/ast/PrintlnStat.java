@@ -20,4 +20,9 @@ public class PrintlnStat extends Stat {
 
 		System.out.println(e);
 	}
+
+	@Override
+	public void genC() {
+		System.out.println("printf(\"%d\\n\", " + expr.genC() + ");");
+	}
 }

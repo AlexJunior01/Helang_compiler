@@ -65,4 +65,14 @@ public class RelExpr {
 				throw  new RuntimeException("Esperando um RelOp.");
 		}
     }
+
+	public String genC() {
+		String firstString = this.firstAddExpr.genC();
+		
+		if (this.secondAddExpr != null) {
+			firstString = firstString + " " + relOp  + " " + this.secondAddExpr.genC();
+		}
+		
+		return firstString;
+	}
 }

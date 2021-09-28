@@ -47,4 +47,28 @@ public class MultExpr {
 		}
 		return resultado;
     }
+
+	public String genC() {
+		String firstString = this.firstSimpleExpr.genC();
+		
+		if (this.multOp.isEmpty()) {
+			return firstString;
+		}
+		
+		int lengthmultOp = multOp.size();
+		int lengthExprs = secondSimpleExpr.size();
+		
+		if (lengthmultOp != lengthExprs)
+			throw new RuntimeException("Número de operadores diferente do número de expressões");
+		
+		for (int i = 0; i < lengthmultOp; i++) {
+			if(multOp.get(i) != Symbol.DIVISAO && multOp.get(i) != Symbol.MULTIPLICACAO &&
+					multOp.get(i) != Symbol.MOD) {
+				throw new RuntimeException("MultOp esperado");
+			}
+			
+			firstString = firstString + " " + multOp.get(i) + " " + secondSimpleExpr.get(i).genC();
+		}
+		return firstString;
+	}
 }

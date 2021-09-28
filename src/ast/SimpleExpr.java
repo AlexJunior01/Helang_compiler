@@ -53,4 +53,21 @@ public class SimpleExpr {
 			throw new RuntimeException("Erro interno dentro do SimpleExpre");
 		}
     }
+
+	public String genC() {
+
+		if (number != null) {
+			return number.genC();
+		} else if (expr != null) {
+			return expr.genC();
+		} else if (addOp != null) {
+			return addOp + simpleExpr.genC();
+		} else if (simpleExpr != null) {
+			return "!" + simpleExpr.genC();
+		} else if (ident != null) {
+			return ident;
+		} else {
+			throw new RuntimeException("Erro interno dentro do SimpleExpre");
+		}
+	}
 }

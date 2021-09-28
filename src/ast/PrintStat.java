@@ -19,4 +19,9 @@ public class PrintStat extends Stat {
 
 		System.out.print(e);
 	}
+
+	@Override
+	public void genC() {
+		System.out.println("printf(\"%d\", " + expr.genC() + ");");
+	}
 }

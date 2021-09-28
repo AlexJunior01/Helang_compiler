@@ -28,4 +28,17 @@ public class IfStat extends Stat {
 			elseStatList.eval(memory);
 		}
 	}
+
+	@Override
+	public void genC() {
+		System.out.println("if(" + expr.genC() + ") {" );
+		this.ifStatList.genC();
+		System.out.println("}");
+		
+		if(elseStatList != null) {
+			System.out.println("else {" );
+			this.elseStatList.genC();
+			System.out.println("}");
+		}
+	}
 }

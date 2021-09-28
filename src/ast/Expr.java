@@ -30,4 +30,15 @@ public class Expr {
 
 		return first;
     }
+
+
+	public String genC() {
+		String firstString = this.firstAndExpr.genC();
+		
+		if (this.secondAndExpr != null) {
+			firstString = firstString + " || " + this.secondAndExpr.genC();
+		}
+		
+		return firstString;
+	}
 }

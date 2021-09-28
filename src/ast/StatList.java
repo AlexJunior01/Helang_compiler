@@ -20,4 +20,10 @@ public class StatList {
 			oneStat.eval(memory);
 		}
 	}
+
+	public void genC() {
+		for(Stat oneStat: stat) {
+			oneStat.genC();
+		}
+	}
 }

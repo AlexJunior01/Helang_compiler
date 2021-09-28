@@ -23,4 +23,11 @@ public class WhileStat extends Stat {
 			statlist.eval(memory);
 		}
 	}
+
+	@Override
+	public void genC() {
+		System.out.println("while(" + expr.genC() + ") {");
+		this.statlist.genC();
+		System.out.println("}");
+	}
 }

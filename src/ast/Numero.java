@@ -9,7 +9,7 @@ import java.util.Map;
 	 */
 
 public class Numero {
-	private int digit;
+	private Integer digit;
 	private Symbol addOp;
 	
 	public Numero(int digit, Symbol addOp) {
@@ -23,5 +23,13 @@ public class Numero {
 			return -digit;
 
 		return digit;
+	}
+
+	public String genC() {
+		if(addOp != null) {
+			return addOp + digit.toString();
+		}
+		
+		return digit.toString();
 	}
 }

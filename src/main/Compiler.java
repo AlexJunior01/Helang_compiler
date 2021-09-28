@@ -472,14 +472,14 @@ public class Compiler {
 		AddExpr ::= MultExpr { AddOp MultExpr }
 	*/
 	private AddExpr addExpr() {
-		MultExpr secondMultExpr = null;
-		Symbol addOp = null;
+		List<MultExpr> secondMultExpr = new ArrayList<>();
+		List<Symbol> addOp = new ArrayList<>();
 		MultExpr firstMultExpr = multExpr();
 		
 		while(token == Symbol.MAIS || token == Symbol.MENOS ) {
-			addOp = token;
+			addOp.add(token);
             nextToken();
-            secondMultExpr = multExpr();
+            secondMultExpr.add(multExpr()) ;
 		}
 		
 		return new AddExpr(firstMultExpr, addOp, secondMultExpr);

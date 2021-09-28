@@ -26,4 +26,9 @@ public class AssignStat extends Stat {
 
 		memory.put(this.ident, valor);
 	}
+
+	@Override
+	public void genC() {
+		System.out.println(ident + " = " + expr.genC() + ";");
+	}
 }

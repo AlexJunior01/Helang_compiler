@@ -24,6 +24,10 @@ public class ForStat extends Stat {
 	public void eval(Map<String, Integer> memory) {
 		int start = this.startExpr.eval(memory);
 		int end = this.endExpr.eval(memory);
+		
+		if(end < start) {
+			throw new RuntimeException("A segunda express�o do 'for' deve ser maior ou igual a primeira!");
+		}
 
 		if (memory.get(this.ident) != null)
 			throw new RuntimeException("Variável " + this.ident + "já foi declarada.");
@@ -34,5 +38,15 @@ public class ForStat extends Stat {
 		}
 
 		memory.remove(this.ident);
+	}
+
+	@Override
+	public void genC() {
+		System.out.print("for(int " + ident + " = " + startExpr.genC() +  "; " + ident);
+		System.out.println(" < " + endExpr.genC() + "; " + ident + "++) {");
+		
+		startExpr.genC();
+		
+		System.out.println("}");
 	}
 }
