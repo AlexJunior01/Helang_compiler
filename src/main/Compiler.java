@@ -15,6 +15,7 @@ import ast.ForStat;
 import ast.IfStat;
 import ast.MultExpr;
 import ast.Numero;
+import ast.OrExpr;
 import ast.PrintStat;
 import ast.PrintlnStat;
 import ast.Program;
@@ -26,10 +27,11 @@ import ast.VarList;
 import ast.WhileStat;
 
 /* 
-   		Program ::= VarList { Stat }
-		VarList ::= { "var" Int Ident ";" }
-		Stat ::= AssignStat | IfStat | ForStat | PrintStat |
-		PrintlnStat | WhileStat
+   		Program ::= Stat { Stat }
+		VarList ::= { "var" Type Ident ";" }
+		Type ::= "Int" | "String" | "Boolean"
+		Stat ::= VarList | AssignStat | IfStat | ForStat
+		| WhileStat | PrintStat | PrintlnStat
 		AssignStat ::= Ident "=" Expr ";"
 		IfStat ::= "if" Expr StatList [
 		"else" StatList ]
@@ -38,17 +40,18 @@ import ast.WhileStat;
 		PrintlnStat ::= "println" Expr ";"
 		StatList ::= "{" { Stat } "}"
 		WhileStat ::= "while" Expr StatList
-		Expr ::= AndExpr [ "||" AndExpr ]
+		Expr ::= OrExpr { "++" OrExpr }
+		OrExpr ::= AndExpr [ "||" AndExpr ]
 		AndExpr ::= RelExpr [ "&&" RelExpr ]
 		RelExpr ::= AddExpr [ RelOp AddExpr ]
 		AddExpr ::= MultExpr { AddOp MultExpr }
 		MultExpr ::= SimpleExpr { MultOp SimpleExpr }
-		SimpleExpr ::= Number |�(� Expr �)� | "!" SimpleExpr
+		SimpleExpr ::= Number | "(" Expr ")" | "!" SimpleExpr
 		| AddOp SimpleExpr | Ident
-		RelOp ::= �<� | �<=� | �>� | �>=�| �==� | �!=�
-		AddOp ::=  �+�| �-�
-		MultOp ::= �*� | �/� | �%�
-		Number ::=  [�+�|�-�] Digit { Digit }
+		RelOp ::= "<" | "<=" | ">" | ">="| "==" | "!="
+		AddOp ::= "+" | "-"
+		MultOp ::= "*" | "/" | "%"
+		Number ::= ["+"|"-"] Digit { Digit }
 
  */
 
@@ -60,6 +63,8 @@ public class Compiler {
         keywordsTable = new Hashtable<String, Symbol>();
         keywordsTable.put( "var", Symbol.VAR );
         keywordsTable.put( "Int", Symbol.INT );
+        keywordsTable.put( "String", Symbol.STRING );
+        keywordsTable.put( "Boolean", Symbol.BOOLEAN );
         keywordsTable.put( "if", Symbol.IF );
         keywordsTable.put( "else", Symbol.ELSE );
         keywordsTable.put( "for", Symbol.FOR );
@@ -145,6 +150,11 @@ public class Compiler {
                         error("Esperado token = '.'");
                         break;
                     case '+':
+                    	if (input[tokenPos +1 ] == '+'){
+                            token = Symbol.MAIS_MAIS;
+                            tokenPos += 2;
+                            break;
+                        }
                         token = Symbol.MAIS;
                         ++tokenPos;
                         break;
@@ -208,7 +218,7 @@ public class Compiler {
                         error("Token '&' esperado.");
                         break;
                     default:
-                        error("Invalida char");
+                        error("char invalido");
                 }
             }
         }
@@ -227,17 +237,17 @@ public class Compiler {
         return p;
     }
     /*
-        Program ::= VarList { Stat }
+        Program ::= Stat { Stat }
     */
     private Program program() {
-        VarList varlist = varlist();
+        Stat stat = stat();
         
-        List<Stat> stat = new ArrayList<>();
+        List<Stat> statList = new ArrayList<>();
 
         while(token != Symbol.EOF) {
-            stat.add(stat());
+            statList.add(stat());
         }
-        return new Program(varlist, stat);
+        return new Program(stat, statList);
     }
 
     /*
@@ -419,21 +429,37 @@ public class Compiler {
     }
     
     /*
-    	Expr ::= AndExpr [ "||" AndExpr ]
+    	Expr ::= OrExpr { "++" OrExpr }
     */
     private Expr expr() {
-    	AndExpr secondAndExpr = null;
-    	AndExpr firstAndExpr = andExpr();
+    	List<OrExpr> secondAndExpr = new ArrayList<>();
+    	OrExpr firstAndExpr = orExpr();
 
-    	if(token == Symbol.OR) {
+    	while(token == Symbol.MAIS_MAIS) {
             nextToken();
-            secondAndExpr = andExpr();
+            secondAndExpr.add(orExpr());
     	}
     	
     	return new Expr(firstAndExpr, secondAndExpr);
     }
     
     /*
+    	OrExpr ::= AndExpr [ "||" AndExpr ]
+    */
+    
+    private OrExpr orExpr() {
+    	AndExpr secondAndExpr = null;
+        AndExpr firstAndExpr = andExpr();
+
+        if(token == Symbol.OR) {
+            nextToken();
+            secondAndExpr = andExpr();
+        }
+        
+        return new OrExpr(firstAndExpr, secondAndExpr);
+	}
+
+	/*
      	AndExpr ::= RelExpr [ "&&" RelExpr ]
     */
     private AndExpr andExpr() {

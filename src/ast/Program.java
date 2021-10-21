@@ -5,28 +5,28 @@ import java.util.List;
 import java.util.Map;
 
 	/*
-		Program ::= VarList { Stat }
+		Program ::= Stat { Stat }
 	*/
 
 public class Program {
 	
-	private VarList varlist;
-	private List<Stat> stat;
+	private Stat stat;
+	private List<Stat> statList;
 	
-	public Program(VarList varlist, List<Stat> stat) {
-			super();
-			this.varlist = varlist;
-			this.stat = stat;
+	public Program(Stat stat, List<Stat> statList) {
+		super();
+		this.stat = stat;
+		this.statList = statList;
 	}
-	
+
 	public void genC() {
 		this.run(false);
 		 System.out.println("#include <stdio.h>\n");
 	     System.out.println("void main() {");
 	     
-	     this.varlist.genC();
+	     this.stat.genC();
 	     
-	     for(Stat oneStat: stat) {
+	     for(Stat oneStat: statList) {
 	    	 oneStat.genC();
 	     }
 	     
@@ -44,9 +44,9 @@ public class Program {
 
 		if (print)
 			memory.put("PRINT_ON_EVAL", 1);
-		this.varlist.eval(memory);
+		this.stat.eval(memory);
 
-		for (Stat oneStat : this.stat) {
+		for (Stat oneStat : this.statList) {
 			oneStat.eval(memory);
 		}
 	}

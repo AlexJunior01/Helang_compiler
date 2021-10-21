@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 /*
-    VarList ::= { "var" Int Ident ";" }
+    VarList ::= { "var" Type Ident ";" }
 */
 public class VarList {
 	private List<String> ident;

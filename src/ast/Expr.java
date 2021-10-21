@@ -1,28 +1,32 @@
 package ast;
 
-	/*
-		Expr ::= AndExpr [ "||" AndExpr ]
-	 */
+	import java.util.List;
+
+/*
+		Expr ::= OrExpr { "++" OrExpr }
+	*/
 
 import java.util.Map;
 
+
 public class Expr {
-	private AndExpr firstAndExpr;
-	private AndExpr secondAndExpr;
+	private OrExpr firstOrExpr;
+	private List<OrExpr> secondOrExpr;
 	
-	public Expr(AndExpr firstAndExpr, AndExpr secondAndExpr) {
+
+    public Expr(OrExpr firstOrExpr, List<OrExpr> secondOrExpr) {
 		super();
-		this.firstAndExpr = firstAndExpr;
-		this.secondAndExpr = secondAndExpr;
+		this.firstOrExpr = firstOrExpr;
+		this.secondOrExpr = secondOrExpr;
 	}
 
 
-    public int eval(Map<String, Integer> memory) {
-		int first = this.firstAndExpr.eval(memory);
+	public int eval(Map<String, Integer> memory) {
+		int first = this.firstOrExpr.eval(memory);
 		int second;
 
-		if (this.secondAndExpr != null) {
-			second = this.secondAndExpr.eval(memory);
+		if (this.secondOrExpr != null) {
+			second = this.secondOrExpr.eval(memory);
 			if (first != 0 || second != 0)
 				return 1;
 			return 0;
@@ -33,10 +37,10 @@ public class Expr {
 
 
 	public String genC() {
-		String firstString = this.firstAndExpr.genC();
+		String firstString = this.firstOrExpr.genC();
 		
-		if (this.secondAndExpr != null) {
-			firstString = firstString + " || " + this.secondAndExpr.genC();
+		if (this.secondOrExpr != null) {
+			firstString = firstString + " || " + this.secondOrExpr.genC();
 		}
 		
 		return firstString;

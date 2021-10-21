@@ -3,7 +3,7 @@ package ast;
 import java.util.Map;
 
 /*
-		Stat ::= AssignStat | IfStat | ForStat | PrintStat |
+		Stat ::= VarList | AssignStat | IfStat | ForStat | PrintStat |
 		PrintlnStat | WhileStat
 	*/
 abstract public class Stat {
