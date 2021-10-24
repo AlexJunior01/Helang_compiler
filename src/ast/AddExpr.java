@@ -20,8 +20,8 @@ public class AddExpr {
 		this.secondMultExpr = secondMultExpr;
 	}
 
-    public int eval(Map<String, Integer> memory) {
-		int first = this.firstMultExpr.eval(memory);
+    public AbstractExpr eval(Map<String, Variable> memory) {
+		AbstractExpr first = this.firstMultExpr.eval(memory);
 		int resultado = 0;
 
 		if (this.addOp.isEmpty()) {
@@ -34,17 +34,17 @@ public class AddExpr {
 		if (lengthaddOp != lengthExprs)
 			throw new RuntimeException("Numero de operadores diferente do numero de expressoes");
 
-		resultado = first;
+		resultado = (Integer) first.getValue();
 		
 		for (int i = 0; i < lengthaddOp; i++) {
 			if (addOp.get(i) == Symbol.MAIS)
-				resultado += secondMultExpr.get(i).eval(memory);
+				resultado += (Integer) secondMultExpr.get(i).eval(memory).getValue();
 			else if (addOp.get(i) == Symbol.MENOS)
-				resultado -= secondMultExpr.get(i).eval(memory);
+				resultado -= (Integer) secondMultExpr.get(i).eval(memory).getValue();
 			else
 				throw new RuntimeException("AddOp esperado");
 		}
-		return resultado;
+		return new IntegerExpr(resultado);
     }
 
 	public String genC() {

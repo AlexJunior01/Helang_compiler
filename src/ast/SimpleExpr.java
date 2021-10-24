@@ -26,8 +26,9 @@ public class SimpleExpr {
 		this.ident = ident;
 	}
 
-    public int eval(Map<String, Integer> memory) {
-		int resultado;
+    public AbstractExpr eval(Map<String, Variable> memory) {
+		AbstractExpr resultado;
+		Variable variavel;
 
 		if (number != null) {
 			return number.eval(memory);
@@ -36,19 +37,26 @@ public class SimpleExpr {
 		} else if (addOp != null) {
 			resultado = simpleExpr.eval(memory);
 			if(addOp == Symbol.MENOS)
-				return resultado*(-1);
+				return new IntegerExpr((Integer)resultado.getValue()*(-1));
 			return resultado;
 		} else if (simpleExpr != null) {
 			resultado =  simpleExpr.eval(memory);
-			if (resultado != 0)
-				return 0;
+			if ((Boolean) resultado.getValue())
+				return BooleanExpr.FALSE;
 
-			return 1;
+			return BooleanExpr.TRUE;
 		} else if (ident != null) {
 			if (memory.get(ident) == null) {
 				throw new RuntimeException("Variável " + ident + " não declarada.");
 			}
-			return memory.get(ident);
+			variavel = memory.get(ident);
+			if (variavel.getType() == Type.booleanType) {
+				return new BooleanExpr((Boolean) variavel.getValor());
+			} else if (variavel.getType() == Type.integerType) {
+				return new IntegerExpr((Integer) variavel.getValor());
+			} else {
+				return new StringExpr((String) variavel.getValor());
+			}
 		} else {
 			throw new RuntimeException("Erro interno dentro do SimpleExpre");
 		}

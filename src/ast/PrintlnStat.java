@@ -15,11 +15,11 @@ public class PrintlnStat extends Stat {
 	}
 
 	@Override
-	public void eval(Map<String, Integer> memory) {
-		int e = expr.eval(memory);
+	public void eval(Map<String, Variable> memory) {
+		AbstractExpr e = expr.eval(memory);
 
 		if(memory.get("PRINT_ON_EVAL") != null){
-			System.out.println(e);
+			System.out.println(e.getValue());
 		}
 	}
 

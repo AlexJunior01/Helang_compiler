@@ -21,19 +21,24 @@ public class ForStat extends Stat {
 	}
 
 	@Override
-	public void eval(Map<String, Integer> memory) {
-		int start = this.startExpr.eval(memory);
-		int end = this.endExpr.eval(memory);
+	public void eval(Map<String, Variable> memory) {
+		AbstractExpr start = this.startExpr.eval(memory);
+		AbstractExpr end = this.endExpr.eval(memory);
+		Variable variableFor = new Variable(this.ident, Type.integerType);
+
+		Integer startValue = (Integer) start.getValue();
+		Integer endValue = (Integer) end.getValue();
 		
-		if(end < start) {
+		if(endValue < startValue) {
 			throw new RuntimeException("A segunda expressao do 'for' deve ser maior ou igual a primeira!");
 		}
 
 		if (memory.get(this.ident) != null)
 			throw new RuntimeException("Variavel " + this.ident + "já foi declarada.");
 
-		for (int i = start; i <= end; i++) {
-			memory.put(this.ident, i);
+		for (int i = startValue; i <= endValue; i++) {
+			variableFor.setValue(i);
+			memory.put(this.ident, variableFor);
 			this.statlist.eval(memory);
 		}
 

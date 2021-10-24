@@ -16,15 +16,16 @@ public class AndExpr {
 		this.secondRelExpr = secondRelExpr;
 	}
 
-    public int eval(Map<String, Integer> memory) {
-		int first = this.firstRelExpr.eval(memory);
-		int second;
+    public AbstractExpr eval(Map<String, Variable> memory) {
+		AbstractExpr first = this.firstRelExpr.eval(memory);
+		AbstractExpr second;
 
 		if (this.secondRelExpr != null) {
 			second = this.secondRelExpr.eval(memory);
-			if (first != 0 && second != 0)
-				return 1;
-			return 0;
+
+			if ((Boolean) first.getValue() && (Boolean) second.getValue())
+				return BooleanExpr.TRUE;
+			return BooleanExpr.FALSE;
 		}
 
 		return first;

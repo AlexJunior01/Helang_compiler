@@ -1,5 +1,7 @@
 package ast;
 
+	import lexer.Symbol;
+
 	import java.util.List;
 
 /*
@@ -21,28 +23,34 @@ public class Expr {
 	}
 
 
-	public int eval(Map<String, Integer> memory) {
-		int first = this.firstOrExpr.eval(memory);
-		int second;
+	public AbstractExpr eval(Map<String, Variable> memory) {
+		AbstractExpr first = this.firstOrExpr.eval(memory);
+		AbstractExpr second;
+		String resultado;
+		int lengthExprs = secondOrExpr.size();
 
-		if (this.secondOrExpr != null) {
-			second = this.secondOrExpr.eval(memory);
-			if (first != 0 || second != 0)
-				return 1;
-			return 0;
+		if(secondOrExpr.isEmpty()) {
+			return first;
 		}
 
-		return first;
+		resultado = (String) first.getValue();
+		for (int i = 0; i < lengthExprs; i++) {
+			resultado = resultado + secondOrExpr.get(i).eval(memory).getValue().toString();
+		}
+
+		return new StringExpr(resultado);
     }
 
 
 	public String genC() {
 		String firstString = this.firstOrExpr.genC();
-		
-		if (this.secondOrExpr != null) {
-			firstString = firstString + " || " + this.secondOrExpr.genC();
+		int lengthExprs = secondOrExpr.size();
+
+		for (OrExpr orExpr : secondOrExpr) {
+			firstString += orExpr.genC();
 		}
-		
+
+
 		return firstString;
 	}
 }

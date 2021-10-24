@@ -21,8 +21,8 @@ public class MultExpr {
 		this.secondSimpleExpr = secondSimpleExpr;
 	}
 
-    public int eval(Map<String, Integer> memory) {
-		int first = firstSimpleExpr.eval(memory);
+    public AbstractExpr eval(Map<String, Variable> memory) {
+		AbstractExpr first = firstSimpleExpr.eval(memory);
 		int resultado = 0;
 		if(this.multOp.isEmpty()) {
 			return first;
@@ -34,18 +34,18 @@ public class MultExpr {
 		if (lengthMult != lengthExprs)
 			throw new RuntimeException("Numero de operadores diferente do numero de expressoes");
 
-		resultado = first;
+		resultado = (Integer) first.getValue();
 		for (int i = 0; i < lengthMult; i++) {
 			if (multOp.get(i) == Symbol.MULTIPLICACAO)
-				resultado *= secondSimpleExpr.get(i).eval(memory);
+				resultado *= (Integer) secondSimpleExpr.get(i).eval(memory).getValue();
 			else if (multOp.get(i) == Symbol.DIVISAO)
-				resultado /= secondSimpleExpr.get(i).eval(memory);
+				resultado /= (Integer) secondSimpleExpr.get(i).eval(memory).getValue();
 			else if (multOp.get(i) == Symbol.MOD)
-				resultado %= secondSimpleExpr.get(i).eval(memory);
+				resultado %= (Integer) secondSimpleExpr.get(i).eval(memory).getValue();
 			else
 				throw new RuntimeException("MultOp esperado");
 		}
-		return resultado;
+		return new IntegerExpr(resultado);
     }
 
 	public String genC() {

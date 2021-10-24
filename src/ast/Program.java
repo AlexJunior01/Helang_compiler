@@ -40,10 +40,13 @@ public class Program {
 			programa válido para a gramatica.
 		 */
 
-		Map<String, Integer> memory = new HashMap<>();
+		Map<String, Variable> memory = new HashMap<>();
 
-		if (print)
-			memory.put("PRINT_ON_EVAL", 1);
+		if (print) {
+			Variable printar = new Variable("PRINT_ON_EVAL", Type.booleanType);
+			memory.put("PRINT_ON_EVAL", printar);
+		}
+
 		this.stat.eval(memory);
 
 		for (Stat oneStat : this.statList) {

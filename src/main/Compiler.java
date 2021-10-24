@@ -1,30 +1,12 @@
 package main;
 
+import ast.*;
 import lexer.Symbol;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-
-import ast.AddExpr;
-import ast.AndExpr;
-import ast.AssignStat;
-import ast.Expr;
-import ast.ForStat;
-import ast.IfStat;
-import ast.MultExpr;
-import ast.Numero;
-import ast.OrExpr;
-import ast.PrintStat;
-import ast.PrintlnStat;
-import ast.Program;
-import ast.RelExpr;
-import ast.SimpleExpr;
-import ast.Stat;
-import ast.StatList;
-import ast.VarList;
-import ast.WhileStat;
 
 /* 
    		Program ::= Stat { Stat }
@@ -268,6 +250,8 @@ public class Compiler {
         	return printlnStat();
         } else if(token == Symbol.WHILE) {
         	return whileStat();
+        } else if(token == Symbol.VAR) {
+            return varlist();
         } else {
             error("Stat esperado");
             return null;
@@ -400,23 +384,28 @@ public class Compiler {
     }
 
     /*
-        VarList ::= { "var" Int Ident ";" }
+        VarList ::= { "var" Type Ident ";" }
     */
     private VarList varlist() {
-    	List<String> identList = new ArrayList<>();
+    	List<Variable> identList = new ArrayList<>();
+        Type tipo = null;
         while (token == Symbol.VAR) {
             nextToken();
 
-            if(token != Symbol.INT) {
-                error("'Int' esperado.");
+            if(token != Symbol.INT && token != Symbol.STRING && token != Symbol.BOOLEAN) {
+                error("Tipo não reconhecido esperado.");
             }
+
+            if(token == Symbol.STRING) tipo = Type.stringType;
+            if(token == Symbol.BOOLEAN) tipo = Type.booleanType;
+            if(token == Symbol.INT) tipo = Type.integerType;
             nextToken();
 
             if(token != Symbol.IDENT) {
                 error("Identificador de variável esperado.");
             }
             String ident = stringValue;
-            identList.add(ident);
+            identList.add(new Variable(ident, tipo));
             
             nextToken();
 
@@ -432,15 +421,15 @@ public class Compiler {
     	Expr ::= OrExpr { "++" OrExpr }
     */
     private Expr expr() {
-    	List<OrExpr> secondAndExpr = new ArrayList<>();
-    	OrExpr firstAndExpr = orExpr();
+    	List<OrExpr> secondOrExpr = new ArrayList<>();
+    	OrExpr firstOrExpr = orExpr();
 
     	while(token == Symbol.MAIS_MAIS) {
             nextToken();
-            secondAndExpr.add(orExpr());
+            secondOrExpr.add(orExpr());
     	}
     	
-    	return new Expr(firstAndExpr, secondAndExpr);
+    	return new Expr(firstOrExpr, secondOrExpr);
     }
     
     /*

@@ -15,7 +15,7 @@ public class StatList {
 		this.stat = stat;
 	}
 
-    public void eval(Map<String, Integer> memory) {
+    public void eval(Map<String, Variable> memory) {
     	for(Stat oneStat : stat) {
 			oneStat.eval(memory);
 		}

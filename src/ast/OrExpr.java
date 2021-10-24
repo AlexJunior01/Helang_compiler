@@ -18,15 +18,15 @@ public class OrExpr {
 	}
 
 
-	public int eval(Map<String, Integer> memory) {
-		int first = this.firstAndExpr.eval(memory);
-		int second;
+	public AbstractExpr eval(Map<String, Variable> memory) {
+		AbstractExpr first = this.firstAndExpr.eval(memory);
+		AbstractExpr second;
 
 		if (this.secondAndExpr != null) {
 			second = this.secondAndExpr.eval(memory);
-			if (first != 0 || second != 0)
-				return 1;
-			return 0;
+			if ((Boolean) first.getValue() || (Boolean) second.getValue())
+				return BooleanExpr.TRUE;
+			return BooleanExpr.FALSE;
 		}
 
 		return first;

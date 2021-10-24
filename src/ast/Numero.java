@@ -18,11 +18,11 @@ public class Numero {
 		this.addOp = addOp;
 	}
 
-	public int eval(Map<String, Integer> memory) {
+	public AbstractExpr eval(Map<String, Variable> memory) {
 		if (addOp == Symbol.MENOS)
-			return -digit;
+			return new IntegerExpr(-digit);
 
-		return digit;
+		return new IntegerExpr(digit);
 	}
 
 	public String genC() {
