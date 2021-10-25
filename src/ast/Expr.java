@@ -50,7 +50,6 @@ public class Expr {
 			firstString += orExpr.genC();
 		}
 
-
 		return firstString;
 	}
 }

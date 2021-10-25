@@ -17,4 +17,16 @@ public class IntegerExpr extends AbstractExpr{
         return this.value;
     }
 
+	@Override
+	public int compareTo(AbstractExpr aExpr) {
+		IntegerExpr outro = (IntegerExpr) aExpr;
+		
+		if(outro.getValue() == this.value) {
+			return 0;
+		} else if(this.value > outro.value) {
+			return 1;
+		} else {
+			return -1;
+		}
+	}
 }

@@ -16,5 +16,10 @@ public class StringExpr extends AbstractExpr{
     public Object getValue() {
         return this.value;
     }
-
+    
+	@Override
+	public int compareTo(AbstractExpr aExpr) {
+		StringExpr outro = (StringExpr) aExpr;
+		return this.value.compareTo(outro.value);
+	}
 }

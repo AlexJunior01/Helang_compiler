@@ -1,8 +1,8 @@
 package ast;
 
-public class BooleanExpr extends AbstractExpr{
-    public static final AbstractExpr TRUE = new BooleanExpr(true);
-    public static final AbstractExpr FALSE = new BooleanExpr(false);
+public class BooleanExpr extends AbstractExpr {
+    public static final BooleanExpr TRUE = new BooleanExpr(true);
+    public static final BooleanExpr FALSE = new BooleanExpr(false);
     private Boolean value;
 
     public BooleanExpr(Boolean valor){
@@ -18,4 +18,17 @@ public class BooleanExpr extends AbstractExpr{
     public Object getValue() {
         return this.value;
     }
+
+	@Override
+	public int compareTo(AbstractExpr aExpr) {
+		BooleanExpr outro = (BooleanExpr) aExpr;
+		
+		if(outro.getValue() == this.value) {
+			return 0;
+		} else if(this.value && !outro.value) {
+			return 1;
+		} else {
+			return -1;
+		}
+	}
 }

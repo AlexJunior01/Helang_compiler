@@ -24,34 +24,36 @@ public class RelExpr {
     public AbstractExpr eval(Map<String, Variable> memory) {
 		AbstractExpr first = this.firstAddExpr.eval(memory);
 		AbstractExpr second;
-		Boolean resultado = true;
+		int compare;
+		
 		if (relOp != null) {
 			second = this.secondAddExpr.eval(memory);
 		} else {
 			return first;
 		}
+		
 		if(first.getType() != second.getType()) {
 			throw new RuntimeException("Impossivel realizar comparacao entre tipos diferentes");
 		}
-		// Fazer comparador nas classes filhas
-//		switch (relOp){
-//			case MAIOR:
-//				resultado = first.getValue() > second.getValue();
-//			case MENOR:
-//				resultado = first < second;
-//			case MAIOR_IGUAL:
-//				resultado = first >= second;
-//			case MENOR_IGUAL:
-//				resultado = first <= second;
-//			case IGUAL:
-//				resultado = first == second;
-//			case DIFERENTE:
-//				resultado = first != second;
-//			default:
-//				throw  new RuntimeException("Esperando um RelOp.");
-//		}
-
-		return new BooleanExpr(resultado);
+		
+		compare = first.compareTo(second);
+		
+		switch (relOp){
+			case MAIOR:
+				return new BooleanExpr(compare > 0);
+			case MENOR:
+				return new BooleanExpr(compare < 0);
+			case MAIOR_IGUAL:
+				return new BooleanExpr(compare >= 0);
+			case MENOR_IGUAL:
+				return new BooleanExpr(compare <= 0);
+			case IGUAL:
+				return new BooleanExpr(compare == 0);
+			case DIFERENTE:
+				return new BooleanExpr(compare != 0);
+			default:
+				throw  new RuntimeException("Esperando um RelOp.");
+		}
     }
 
 	public String genC() {
