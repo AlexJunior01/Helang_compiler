@@ -25,7 +25,6 @@ public class Expr {
 
 	public AbstractExpr eval(Map<String, Variable> memory) {
 		AbstractExpr first = this.firstOrExpr.eval(memory);
-		AbstractExpr second;
 		String resultado;
 		int lengthExprs = secondOrExpr.size();
 
@@ -33,7 +32,7 @@ public class Expr {
 			return first;
 		}
 
-		resultado = (String) first.getValue();
+		resultado = first.getValue().toString();
 		for (int i = 0; i < lengthExprs; i++) {
 			resultado = resultado + secondOrExpr.get(i).eval(memory).getValue().toString();
 		}

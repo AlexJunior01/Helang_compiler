@@ -51,9 +51,11 @@ public class Compiler {
         keywordsTable.put( "else", Symbol.ELSE );
         keywordsTable.put( "for", Symbol.FOR );
         keywordsTable.put( "while", Symbol.WHILE );
-        keywordsTable.put( "print", Symbol.PRINT);
-        keywordsTable.put( "println", Symbol.PRINTLN);
-        keywordsTable.put( "in", Symbol.IN);
+        keywordsTable.put( "print", Symbol.PRINT );
+        keywordsTable.put( "println", Symbol.PRINTLN );
+        keywordsTable.put( "in", Symbol.IN );
+        keywordsTable.put( "true", Symbol.TRUE );
+        keywordsTable.put( "false", Symbol.FALSE );
     }
 	public void nextToken() {
 		char ch;
@@ -198,6 +200,18 @@ public class Compiler {
                             break;
                         }
                         error("Token '&' esperado.");
+                        break;
+                    case '"':
+                    	StringBuffer ident = new StringBuffer();
+                    	tokenPos++;
+                        while(input[tokenPos] != '"') {
+                        	ident.append(input[tokenPos]);
+                        	tokenPos++;
+                        }
+                        stringValue = ident.toString();
+                        token = Symbol.LITERAL_STRING;
+                        
+                        tokenPos++;
                         break;
                     default:
                         error("char invalido");
@@ -528,8 +542,10 @@ public class Compiler {
 	    SimpleExpr simpleExpr = null;
 	    Symbol addOp = null;
 	    String ident = null;
-		
+	    String literalString = null;
+	    Boolean boolVar = null;
 	    
+		
 	    if(token == Symbol.NUMBER) {
 	    	number = number(addOp);
 		} else if(token == Symbol.ABRE_PARANTESES) {
@@ -554,11 +570,20 @@ public class Compiler {
 		} else if(token == Symbol.IDENT) {
 			ident = this.stringValue;
             nextToken();
+		} else if(token == Symbol.TRUE) {
+			boolVar = true;
+            nextToken();
+		} else if(token == Symbol.FALSE) {
+			boolVar = false;
+            nextToken();
+		} else if(token == Symbol.LITERAL_STRING) {
+			literalString = this.stringValue;
+            nextToken();
 		} else {
 			error("simpleExpr esperado");
 		}
 	    
-    	return new SimpleExpr(number, expr, simpleExpr, addOp, ident);
+    	return new SimpleExpr(number, expr, simpleExpr, addOp, literalString, ident, boolVar);
 	}
 
     private Numero number(Symbol addOp) {

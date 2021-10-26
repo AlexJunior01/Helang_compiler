@@ -15,15 +15,19 @@ public class SimpleExpr {
 	private SimpleExpr simpleExpr;
 	private Symbol addOp;
 	private String ident;
+	private String literalString;
+	private Boolean boolVar;
 	
 	
-	public SimpleExpr(Numero number, Expr expr, SimpleExpr simpleExpr, Symbol addOp, String ident) {
+	public SimpleExpr(Numero number, Expr expr, SimpleExpr simpleExpr, Symbol addOp, String literalString, String ident, Boolean boolVar) {
 		super();
 		this.number = number;
 		this.expr = expr;
 		this.simpleExpr = simpleExpr;
 		this.addOp = addOp;
 		this.ident = ident;
+		this.boolVar = boolVar;
+		this.literalString = literalString;
 	}
 
     public AbstractExpr eval(Map<String, Variable> memory) {
@@ -57,6 +61,10 @@ public class SimpleExpr {
 			} else {
 				return new StringExpr((String) variavel.getValor());
 			}
+		} else if(literalString != null) {
+			return new StringExpr(literalString);
+		} else if(boolVar != null) {
+			return new BooleanExpr(boolVar);
 		} else {
 			throw new RuntimeException("Erro interno dentro do SimpleExpre");
 		}

@@ -36,6 +36,9 @@ public enum Symbol {
 	MENOS("-"),
 	MULTIPLICACAO("*"),
 	DIVISAO("/"), 
+	LITERAL_STRING("literalString"),
+	TRUE("true"),
+	FALSE("false"),
 	MOD("%");
 	
     Symbol(String name) {
