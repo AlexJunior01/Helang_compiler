@@ -1,15 +1,21 @@
 var Int n;
 n = 100;
+
 var Int soma;
 soma = 0;
+
 var Int i;
 i = 0;
+
 var Boolean verd;
 verd = true;
+
 var Int kk;
 kk = 10000;
+
 var Int kkWhile;
 var Int m;
+
 while i <= n && !!verd {
   kkWhile = i%2;
   m = (0+0*0/1);
@@ -18,8 +24,10 @@ while i <= n && !!verd {
   }
   i = i + 1;
 }
+
 var Int somaFor;
 somaFor = 0;
+
 var Int quad;
 for k in 0..100 {
   quad = k*k;

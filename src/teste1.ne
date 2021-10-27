@@ -1,15 +1,18 @@
-var Int n;
-var Int x;
-var String m;
-var Boolean p;
+var Int soma;
+soma = 0;
 
-x = 15;
-n = 15;
-p = true;
-m = "mini monstrinho tomando forma";
+var Int somaFor;
+somaFor = 0;
 
-if (x == n) {
-	println x;
+println "soma = " ++ soma;
+println "somaFor = " ++ somaFor;
+var Int num;
+var String str;
+var Boolean souVerd;
+
+if soma == somaFor {
+	println soma;
+	println somaFor;
 } else {
-	println p ++ m ++ x;
+	println "Fudeu";
 }

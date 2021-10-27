@@ -20,6 +20,7 @@ public class StringExpr extends AbstractExpr{
 	@Override
 	public int compareTo(AbstractExpr aExpr) {
 		StringExpr outro = (StringExpr) aExpr;
-		return this.value.compareTo(outro.value);
+        String outraString = (String) outro.getValue();
+		return this.value.compareTo(outraString);
 	}
 }

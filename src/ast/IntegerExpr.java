@@ -21,7 +21,7 @@ public class IntegerExpr extends AbstractExpr{
 	public int compareTo(AbstractExpr aExpr) {
 		IntegerExpr outro = (IntegerExpr) aExpr;
 		
-		if(outro.getValue() == this.value) {
+		if(this.value.equals(outro.getValue())) {
 			return 0;
 		} else if(this.value > outro.value) {
 			return 1;
