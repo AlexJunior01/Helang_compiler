@@ -17,8 +17,11 @@ public class Program {
 
 	public void genC() {
 		 this.run(false);
-		 System.out.println("#include <stdio.h>\n");
-		 System.out.println("#include <stdbool.h>\n");
+		 System.out.println("#include <stdio.h>");
+		 System.out.println("#include <stdbool.h>");
+		 System.out.println("char* plusPlus(int a, int b) {\n" +
+				 "\treturn \"Not implemented yet\";\n" +
+				 "}");
 	     System.out.println("void main() {");
 	     
 	     this.stat.genC();

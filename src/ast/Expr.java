@@ -39,13 +39,31 @@ public class Expr extends AbstractExpr{
 
 
 	public String genC() {
-		String firstString = "teste";
+		String firstString = "";
 		if(this.secondOrExpr.isEmpty()) {
 			firstString = this.firstOrExpr.genC();
 			return  firstString;
-		} else {
-			return firstString;
 		}
+
+//		int lengthExprs = secondOrExpr.size();
+//		if (lengthExprs == 1) {
+//
+//
+//			for (int i = 0; i < lengthExprs; i++) {
+//				firstString += "plusPlus( ";
+//			}
+//
+//			firstString += firstOrExpr.genC();
+//
+//			for (int i = 0; i < lengthExprs; i++) {
+//				firstString += "," + secondOrExpr.get(i).genC() + ")";
+//			}
+//
+//			return firstString;
+//		}
+		firstString = "\"Not implemented yet\"\n";
+//
+		return firstString;
 	}
 
 	@Override
