@@ -4,9 +4,6 @@ import lexer.Symbol;
 
 import java.util.Map;
 
-/*
-		Number ::=  [�+�|�-�] Digit { Digit }
-	 */
 
 public class Numero {
 	private Integer digit;

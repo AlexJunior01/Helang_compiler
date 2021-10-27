@@ -2,10 +2,7 @@ package ast;
 
 import java.util.Map;
 
-/*
-		IfStat ::= "if" Expr StatList [
-		"else" StatList ]
-	*/
+
 public class IfStat extends Stat {
 	private Expr expr;
 	private StatList ifStatList;

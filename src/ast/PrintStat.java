@@ -2,9 +2,7 @@ package ast;
 
 import java.util.Map;
 
-/*
-		PrintStat ::= "print" Expr ";"
-	 */
+
 public class PrintStat extends Stat {
 	private Expr expr;
 

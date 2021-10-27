@@ -4,10 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-	/*
-		Program ::= Stat { Stat }
-	*/
-
 public class Program {
 	
 	private Stat stat;
@@ -22,6 +18,7 @@ public class Program {
 	public void genC() {
 		this.run(false);
 		 System.out.println("#include <stdio.h>\n");
+		 System.out.println("#include <stdbool.h>\n");
 	     System.out.println("void main() {");
 	     
 	     this.stat.genC();
@@ -34,11 +31,6 @@ public class Program {
 	}
 
 	public void run(boolean print) {
-		/*
-			Nos adicionamos a variavel print para conseguirmos controlar quando o run ira printar os resultados ou nao.
-			Fizemos isso pois queriamos utilizar o run() antes de gerar o codigo em C para validar se a entrada e um
-			programa válido para a gramatica.
-		 */
 
 		Map<String, Variable> memory = new HashMap<>();
 

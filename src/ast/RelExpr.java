@@ -4,9 +4,6 @@ import lexer.Symbol;
 
 import java.util.Map;
 
-/*
-		RelExpr ::= AddExpr [ RelOp AddExpr ]
-	*/
 
 public class RelExpr {
 	private AddExpr firstAddExpr;

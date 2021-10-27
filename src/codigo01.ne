@@ -1,3 +1,7 @@
+/*
+teste teste
+*/
+
 var Int n;
 n = 100;
 
@@ -35,8 +39,8 @@ for k in 0..100 {
 	   somaFor = somaFor + quad;
   }
 }
-println "soma = " ++ soma;
-println "somaFor = " ++ somaFor;
+println soma;
+println somaFor;
 var Int num;
 var String str;
 var Boolean souVerd;
@@ -46,16 +50,14 @@ if soma == somaFor {
         str = "sou String";
         for cont in 1..5 {
             souVerd = true;
-            println souVerd ++ " " ++ cont;
         }
         str = "continuo String";
-		println "str = " ++ str;
+		println str;
     }
     else {
         num = 1;
-        println "num = " ++ num;
+        println num;
     }
-	println "true = " ++ (true >= false);
 }
 else {
 	println "Alguma coisa errada! Soma != SomaFor";

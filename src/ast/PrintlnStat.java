@@ -1,8 +1,5 @@
 package ast;
 
-	/*
-		PrintlnStat ::= "println" Expr ";"
-	 */
 
 import java.util.Map;
 

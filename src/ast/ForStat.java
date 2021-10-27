@@ -1,9 +1,5 @@
 package ast;
 
-	/*
-		ForStat ::= "for" Ident "in" Expr ".." Expr StatList
-	 */
-
 import java.util.Map;
 
 public class ForStat extends Stat {
@@ -29,20 +25,20 @@ public class ForStat extends Stat {
 		Integer startValue = (Integer) start.getValue();
 		Integer endValue = (Integer) end.getValue();
 		
-		if(endValue < startValue) {
-			throw new RuntimeException("A segunda expressao do 'for' deve ser maior ou igual a primeira!");
+		if(endValue >= startValue) {
+
+			if (memory.get(this.ident) != null)
+				throw new RuntimeException("Variavel " + this.ident + "já foi declarada.");
+
+			for (int i = startValue; i <= endValue; i++) {
+				variableFor.setValue(i);
+				memory.put(this.ident, variableFor);
+				this.statlist.eval(memory);
+			}
+
+			memory.remove(this.ident);
 		}
 
-		if (memory.get(this.ident) != null)
-			throw new RuntimeException("Variavel " + this.ident + "já foi declarada.");
-
-		for (int i = startValue; i <= endValue; i++) {
-			variableFor.setValue(i);
-			memory.put(this.ident, variableFor);
-			this.statlist.eval(memory);
-		}
-
-		memory.remove(this.ident);
 	}
 
 	@Override

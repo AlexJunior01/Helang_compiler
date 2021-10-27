@@ -2,9 +2,6 @@ package ast;
 
 import java.util.Map;
 
-/*
- 		OrExpr ::= AndExpr [ "||" AndExpr ]
-	*/
 
 public class OrExpr {
 	private AndExpr firstAndExpr;

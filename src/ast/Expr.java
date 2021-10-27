@@ -1,13 +1,7 @@
 package ast;
 
-	import lexer.Symbol;
 
-	import java.util.List;
-
-/*
-		Expr ::= OrExpr { "++" OrExpr }
-	*/
-
+import java.util.List;
 import java.util.Map;
 
 
@@ -42,13 +36,12 @@ public class Expr {
 
 
 	public String genC() {
-		String firstString = this.firstOrExpr.genC();
-		int lengthExprs = secondOrExpr.size();
-
-		for (OrExpr orExpr : secondOrExpr) {
-			firstString += orExpr.genC();
+		String firstString = "teste";
+		if(this.secondOrExpr.isEmpty()) {
+			firstString = this.firstOrExpr.genC();
+			return  firstString;
+		} else {
+			return firstString;
 		}
-
-		return firstString;
 	}
 }

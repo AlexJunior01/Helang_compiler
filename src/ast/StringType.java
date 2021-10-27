@@ -1,6 +1,6 @@
 package ast;
 
-import java.io.*;
+
 
 public class StringType extends Type {
     

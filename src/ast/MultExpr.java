@@ -5,9 +5,6 @@ import lexer.Symbol;
 import java.util.List;
 import java.util.Map;
 
-/*
-		MultExpr ::= SimpleExpr { MultOp SimpleExpr }
-	*/
 
 public class MultExpr {
 	private SimpleExpr firstSimpleExpr;

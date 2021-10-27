@@ -1,9 +1,5 @@
 package ast;
 
-	/*
-		AssignStat ::= Ident "=" Expr ";"
-	*/
-
 import java.util.Map;
 
 public class AssignStat extends Stat {

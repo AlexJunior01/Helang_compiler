@@ -1,6 +1,4 @@
 package ast;
-
-import java.io.*;
   
 public class BooleanType extends Type {
     
@@ -9,7 +7,7 @@ public class BooleanType extends Type {
    }
    
    public String getCname() {
-      return "int";
+      return "bool";
    }
    
 }

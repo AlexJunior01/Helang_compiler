@@ -8,39 +8,9 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-/* 
-   		Program ::= Stat { Stat }
-		VarList ::= { "var" Type Ident ";" }
-		Type ::= "Int" | "String" | "Boolean"
-		Stat ::= VarList | AssignStat | IfStat | ForStat
-		| WhileStat | PrintStat | PrintlnStat
-		AssignStat ::= Ident "=" Expr ";"
-		IfStat ::= "if" Expr StatList [
-		"else" StatList ]
-		ForStat ::= "for" Id "in" Expr ".." Expr StatList
-		PrintStat ::= "print" Expr ";"
-		PrintlnStat ::= "println" Expr ";"
-		StatList ::= "{" { Stat } "}"
-		WhileStat ::= "while" Expr StatList
-		Expr ::= OrExpr { "++" OrExpr }
-		OrExpr ::= AndExpr [ "||" AndExpr ]
-		AndExpr ::= RelExpr [ "&&" RelExpr ]
-		RelExpr ::= AddExpr [ RelOp AddExpr ]
-		AddExpr ::= MultExpr { AddOp MultExpr }
-		MultExpr ::= SimpleExpr { MultOp SimpleExpr }
-		SimpleExpr ::= Number | "(" Expr ")" | "!" SimpleExpr
-		| AddOp SimpleExpr | Ident
-		RelOp ::= "<" | "<=" | ">" | ">="| "==" | "!="
-		AddOp ::= "+" | "-"
-		MultOp ::= "*" | "/" | "%"
-		Number ::= ["+"|"-"] Digit { Digit }
-
- */
 
 public class Compiler {
     static private Map<String, Symbol> keywordsTable;
-
-    // this code will be executed only once for each program execution
     static {
         keywordsTable = new Hashtable<String, Symbol>();
         keywordsTable.put( "var", Symbol.VAR );
@@ -65,6 +35,20 @@ public class Compiler {
 		}
         if(ch == '\0') {
           token = Symbol.EOF;
+        } else if ( input[tokenPos] == '/' && input[tokenPos + 1] == '/' ) {
+            while ( input[tokenPos] != '\0'&& input[tokenPos] != '\n' )
+                tokenPos++;
+            nextToken();
+        } else if ( input[tokenPos] == '/' && input[tokenPos + 1] == '*' ) {
+            boolean flag = true;
+            tokenPos += 2;
+            while (flag) {
+                if (input[tokenPos] == '*' && input[tokenPos + 1] == '/')
+                    flag = false;
+                tokenPos++;
+            }
+            tokenPos += 2;
+            nextToken();
         } else {
             if(Character.isLetter(ch)){
                 StringBuffer ident = new StringBuffer();
@@ -232,9 +216,8 @@ public class Compiler {
 
         return p;
     }
-    /*
-        Program ::= Stat { Stat }
-    */
+
+
     private Program program() {
         Stat stat = stat();
         
@@ -246,10 +229,6 @@ public class Compiler {
         return new Program(stat, statList);
     }
 
-    /*
-        Stat ::= AssignStat | IfStat | ForStat | PrintStat |
-            		PrintlnStat | WhileStat
-    */
     
     private Stat stat() {
         if(token == Symbol.IDENT) {
@@ -281,9 +260,6 @@ public class Compiler {
         return new WhileStat(expr, statList);
     }
 
-    /*
-        PrintlnStat ::= "println" Expr ";"
-    */
     private PrintlnStat printlnStat() {
         nextToken();
         Expr expr = expr();
@@ -296,9 +272,7 @@ public class Compiler {
         return new PrintlnStat(expr);
     }
 
-    /*
-        PrintStat ::= "print" Expr ";"
-    */
+
     private PrintStat printStat() {
         nextToken();
         Expr expr = expr();
@@ -311,9 +285,7 @@ public class Compiler {
         return new PrintStat(expr);
     }
 
-    /*
-        ForStat ::= "for" Ident "in" Expr ".." Expr StatList
-    */
+
     private ForStat forStat() {
         nextToken();
 
@@ -340,10 +312,7 @@ public class Compiler {
         return new ForStat(iterador, startExpr, endExpr, statlist);
     }
 
-    /*
-        IfStat ::= "if" Expr StatList [
-                    "else" StatList ]
-     */
+
     private IfStat ifStat() {
         nextToken();
         Expr expr = expr();
@@ -360,9 +329,7 @@ public class Compiler {
         return new IfStat(expr, ifStatList, elseStatList);
     }
 
-    /*
-        StatList ::= "{" { Stat } "}"
-    */
+
     private StatList statList() {
         List<Stat> stats = new ArrayList<>();
         if(token != Symbol.ABRE_CHAVES) {
@@ -376,9 +343,7 @@ public class Compiler {
         return new StatList(stats);
     }
 
-    /*
-        AssignStat ::= Ident "=" Expr ";"
-    */
+
     private AssignStat assignStat() {
         String ident = stringValue;
         nextToken();
@@ -397,9 +362,7 @@ public class Compiler {
         return new AssignStat(ident, expr);
     }
 
-    /*
-        VarList ::= { "var" Type Ident ";" }
-    */
+
     private VarList varlist() {
     	List<Variable> identList = new ArrayList<>();
         Type tipo = null;
@@ -431,9 +394,7 @@ public class Compiler {
         return new VarList(identList);
     }
     
-    /*
-    	Expr ::= OrExpr { "++" OrExpr }
-    */
+
     private Expr expr() {
     	List<OrExpr> secondOrExpr = new ArrayList<>();
     	OrExpr firstOrExpr = orExpr();
@@ -446,10 +407,7 @@ public class Compiler {
     	return new Expr(firstOrExpr, secondOrExpr);
     }
     
-    /*
-    	OrExpr ::= AndExpr [ "||" AndExpr ]
-    */
-    
+
     private OrExpr orExpr() {
     	AndExpr secondAndExpr = null;
         AndExpr firstAndExpr = andExpr();
@@ -462,9 +420,7 @@ public class Compiler {
         return new OrExpr(firstAndExpr, secondAndExpr);
 	}
 
-	/*
-     	AndExpr ::= RelExpr [ "&&" RelExpr ]
-    */
+
     private AndExpr andExpr() {
     	RelExpr secondRel = null;
     	RelExpr firstRelExpr = relExpr();
@@ -477,10 +433,7 @@ public class Compiler {
 		return new AndExpr(firstRelExpr, secondRel);
 	}
     
-    /*
-    	RelExpr ::= AddExpr [ RelOp AddExpr ]
-    */
-    
+
 	private RelExpr relExpr() {
 		AddExpr secondAddExpr = null;
 		Symbol relOp = null;
@@ -497,9 +450,7 @@ public class Compiler {
 		return new RelExpr(firstAddExpr, relOp, secondAddExpr);
 	}
 	
-	/*
-		AddExpr ::= MultExpr { AddOp MultExpr }
-	*/
+
 	private AddExpr addExpr() {
 		List<MultExpr> secondMultExpr = new ArrayList<>();
 		List<Symbol> addOp = new ArrayList<>();
@@ -514,9 +465,7 @@ public class Compiler {
 		return new AddExpr(firstMultExpr, addOp, secondMultExpr);
 	}
 	
-	/*
-		MultExpr ::= SimpleExpr { MultOp SimpleExpr }
-	*/
+
 	private MultExpr multExpr() {
 		List<SimpleExpr> secondSimpleExpr = new ArrayList<>();
 		List<Symbol> multOp = new ArrayList<>();
@@ -531,10 +480,7 @@ public class Compiler {
 		return new MultExpr(firstSimpleExpr, multOp, secondSimpleExpr);
 	}
 	
-	/*
-		SimpleExpr ::= Number | �(� Expr �)� | "!" SimpleExpr | AddOp SimpleExpr | Ident
-	*/
-	
+
 	private SimpleExpr simpleExpr() {
 		
 		Numero number = null;

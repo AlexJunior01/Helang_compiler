@@ -1,6 +1,5 @@
 package ast;
 
-import java.io.PrintWriter;
 
 public class IntegerType extends Type {
     

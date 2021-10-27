@@ -1,8 +1,5 @@
 package ast;
 
-	/*
-		AndExpr ::= RelExpr [ "&&" RelExpr ]
-	*/
 
 import java.util.Map;
 

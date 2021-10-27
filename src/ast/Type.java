@@ -1,7 +1,5 @@
 package ast;
 
-import java.io.*;
-
 abstract public class Type {
     
     public Type( String name ) {

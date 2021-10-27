@@ -1,8 +1,5 @@
 package ast;
 
-	/*
-		WhileStat ::= "while" Expr StatList
-	*/
 
 import java.util.Map;
 

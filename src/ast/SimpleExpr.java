@@ -4,10 +4,6 @@ import lexer.Symbol;
 
 import java.util.Map;
 
-/*
-		SimpleExpr ::= Number |�(� Expr �)� | "!" SimpleExpr
-		| AddOp SimpleExpr | Ident
-	*/
 
 public class SimpleExpr {
 	private Numero number;
@@ -82,8 +78,12 @@ public class SimpleExpr {
 			return "!" + simpleExpr.genC();
 		} else if (ident != null) {
 			return ident;
+		} else if(literalString != null) {
+			return '"'+literalString+'"';
+		} else if(boolVar != null) {
+			return boolVar.toString();
 		} else {
-			throw new RuntimeException("Erro interno dentro do SimpleExpre");
+			throw new RuntimeException("Erro interno dentro do SimpleExprE");
 		}
 	}
 }

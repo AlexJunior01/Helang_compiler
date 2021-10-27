@@ -3,9 +3,7 @@ package ast;
 import java.util.List;
 import java.util.Map;
 
-/*
-    VarList ::= { "var" Type Ident ";" }
-*/
+
 public class VarList extends Stat{
 	private List<Variable> ident;
 
@@ -24,8 +22,10 @@ public class VarList extends Stat{
 		}
 
 		public void genC() {
+			String tipo;
 			for(Variable identificador: ident) {
-				System.out.println("int " + identificador + ";");
+				tipo = identificador.getType().getCname();
+				System.out.println(tipo + " " + identificador.getName() + ";");
 			}
 	
 		}
