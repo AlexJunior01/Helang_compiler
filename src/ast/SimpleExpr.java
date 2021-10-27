@@ -79,7 +79,7 @@ public class SimpleExpr  extends AbstractExpr{
 		} else if (expr != null) {
 			return expr.genC();
 		} else if (addOp != null) {
-			return addOp + simpleExpr.genC();
+			return addOp + "(" + simpleExpr.genC() + ")";
 		} else if (simpleExpr != null) {
 			return "!" + simpleExpr.genC();
 		} else if (ident != null) {

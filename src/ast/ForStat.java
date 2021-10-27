@@ -44,7 +44,7 @@ public class ForStat extends Stat {
 	@Override
 	public void genC() {
 		System.out.print("for(int " + ident + " = " + startExpr.genC() +  "; " + ident);
-		System.out.println(" < " + endExpr.genC() + "; " + ident + "++) {");
+		System.out.println(" <= " + endExpr.genC() + "; " + ident + "++) {");
 
 		statlist.genC();
 		
