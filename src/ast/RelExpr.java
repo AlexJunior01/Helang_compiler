@@ -4,15 +4,13 @@ import lexer.Symbol;
 
 import java.util.Map;
 
-/*
-		RelExpr ::= AddExpr [ RelOp AddExpr ]
-	*/
 
-public class RelExpr {
+public class RelExpr  extends AbstractExpr{
 	private AddExpr firstAddExpr;
 	private Symbol relOp;
 	private AddExpr secondAddExpr;
-	
+	private Type tipo;
+
 	public RelExpr(AddExpr firstAddExpr, Symbol relOp, AddExpr secondAddExpr) {
 		super();
 		this.firstAddExpr = firstAddExpr;
@@ -20,47 +18,38 @@ public class RelExpr {
 		this.secondAddExpr = secondAddExpr;
 	}
 
-    public int eval(Map<String, Integer> memory) {
-		int first = this.firstAddExpr.eval(memory);
-		int second;
 
+    public AbstractExpr eval(Map<String, Variable> memory) {
+		AbstractExpr first = this.firstAddExpr.eval(memory);
+		AbstractExpr second;
+		int compare;
+		
 		if (relOp != null) {
 			second = this.secondAddExpr.eval(memory);
 		} else {
+			this.tipo = first.getType();
 			return first;
 		}
-
+		
+		if(first.getType() != second.getType()) {
+			throw new RuntimeException("Impossivel realizar comparacao entre tipos diferentes");
+		}
+		
+		compare = first.compareTo(second);
+		this.tipo = Type.booleanType;
 		switch (relOp){
 			case MAIOR:
-				if (first > second)
-					return 1;
-				else
-					return 0;
+				return new BooleanExpr(compare > 0);
 			case MENOR:
-				if (first < second)
-					return 1;
-				else
-					return 0;
+				return new BooleanExpr(compare < 0);
 			case MAIOR_IGUAL:
-				if (first >= second)
-					return 1;
-				else
-					return 0;
+				return new BooleanExpr(compare >= 0);
 			case MENOR_IGUAL:
-				if (first <= second)
-					return 1;
-				else
-					return 0;
+				return new BooleanExpr(compare <= 0);
 			case IGUAL:
-				if (first == second)
-					return 1;
-				else
-					return 0;
+				return new BooleanExpr(compare == 0);
 			case DIFERENTE:
-				if (first != second)
-					return 1;
-				else
-					return 0;
+				return new BooleanExpr(compare != 0);
 			default:
 				throw  new RuntimeException("Esperando um RelOp.");
 		}
@@ -74,5 +63,20 @@ public class RelExpr {
 		}
 		
 		return firstString;
+	}
+
+	@Override
+	public Type getType() {
+		return this.tipo;
+	}
+
+	@Override
+	public Object getValue() {
+		return null;
+	}
+
+	@Override
+	public int compareTo(AbstractExpr aExpr) {
+		return 0;
 	}
 }

@@ -4,9 +4,6 @@ import lexer.Symbol;
 
 import java.util.Map;
 
-/*
-		Number ::=  [�+�|�-�] Digit { Digit }
-	 */
 
 public class Numero {
 	private Integer digit;
@@ -18,11 +15,11 @@ public class Numero {
 		this.addOp = addOp;
 	}
 
-	public int eval(Map<String, Integer> memory) {
+	public AbstractExpr eval(Map<String, Variable> memory) {
 		if (addOp == Symbol.MENOS)
-			return -digit;
+			return new IntegerExpr(-digit);
 
-		return digit;
+		return new IntegerExpr(digit);
 	}
 
 	public String genC() {

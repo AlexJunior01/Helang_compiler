@@ -5,15 +5,13 @@ import lexer.Symbol;
 import java.util.List;
 import java.util.Map;
 
-/*
-		MultExpr ::= SimpleExpr { MultOp SimpleExpr }
-	*/
 
-public class MultExpr {
+public class MultExpr extends AbstractExpr{
 	private SimpleExpr firstSimpleExpr;
 	private List<Symbol> multOp;
 	private List<SimpleExpr> secondSimpleExpr;
-	
+	private Type tipo;
+
 	public MultExpr(SimpleExpr firstSimpleExpr, List<Symbol> multOp, List<SimpleExpr> secondSimpleExpr) {
 		super();
 		this.firstSimpleExpr = firstSimpleExpr;
@@ -21,10 +19,11 @@ public class MultExpr {
 		this.secondSimpleExpr = secondSimpleExpr;
 	}
 
-    public int eval(Map<String, Integer> memory) {
-		int first = firstSimpleExpr.eval(memory);
+    public AbstractExpr eval(Map<String, Variable> memory) {
+		AbstractExpr first = firstSimpleExpr.eval(memory);
 		int resultado = 0;
 		if(this.multOp.isEmpty()) {
+			this.tipo = first.getType();
 			return first;
 		}
 
@@ -34,18 +33,19 @@ public class MultExpr {
 		if (lengthMult != lengthExprs)
 			throw new RuntimeException("Numero de operadores diferente do numero de expressoes");
 
-		resultado = first;
+		resultado = (Integer) first.getValue();
 		for (int i = 0; i < lengthMult; i++) {
 			if (multOp.get(i) == Symbol.MULTIPLICACAO)
-				resultado *= secondSimpleExpr.get(i).eval(memory);
+				resultado *= (Integer) secondSimpleExpr.get(i).eval(memory).getValue();
 			else if (multOp.get(i) == Symbol.DIVISAO)
-				resultado /= secondSimpleExpr.get(i).eval(memory);
+				resultado /= (Integer) secondSimpleExpr.get(i).eval(memory).getValue();
 			else if (multOp.get(i) == Symbol.MOD)
-				resultado %= secondSimpleExpr.get(i).eval(memory);
+				resultado %= (Integer) secondSimpleExpr.get(i).eval(memory).getValue();
 			else
 				throw new RuntimeException("MultOp esperado");
 		}
-		return resultado;
+		this.tipo = Type.integerType;
+		return new IntegerExpr(resultado);
     }
 
 	public String genC() {
@@ -70,5 +70,20 @@ public class MultExpr {
 			firstString = firstString + " " + multOp.get(i) + " " + secondSimpleExpr.get(i).genC();
 		}
 		return firstString;
+	}
+
+	@Override
+	public Type getType() {
+		return this.tipo;
+	}
+
+	@Override
+	public Object getValue() {
+		return null;
+	}
+
+	@Override
+	public int compareTo(AbstractExpr aExpr) {
+		return 0;
 	}
 }

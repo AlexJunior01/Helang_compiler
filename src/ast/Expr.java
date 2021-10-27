@@ -1,44 +1,83 @@
 package ast;
 
-	/*
-		Expr ::= AndExpr [ "||" AndExpr ]
-	 */
 
+import java.util.List;
 import java.util.Map;
 
-public class Expr {
-	private AndExpr firstAndExpr;
-	private AndExpr secondAndExpr;
-	
-	public Expr(AndExpr firstAndExpr, AndExpr secondAndExpr) {
+
+public class Expr extends AbstractExpr{
+	private OrExpr firstOrExpr;
+	private List<OrExpr> secondOrExpr;
+	private Type tipo;
+
+
+	public Expr(OrExpr firstOrExpr, List<OrExpr> secondOrExpr) {
 		super();
-		this.firstAndExpr = firstAndExpr;
-		this.secondAndExpr = secondAndExpr;
+		this.firstOrExpr = firstOrExpr;
+		this.secondOrExpr = secondOrExpr;
 	}
 
 
-    public int eval(Map<String, Integer> memory) {
-		int first = this.firstAndExpr.eval(memory);
-		int second;
+	public AbstractExpr eval(Map<String, Variable> memory) {
+		AbstractExpr first = this.firstOrExpr.eval(memory);
+		String resultado;
+		int lengthExprs = secondOrExpr.size();
 
-		if (this.secondAndExpr != null) {
-			second = this.secondAndExpr.eval(memory);
-			if (first != 0 || second != 0)
-				return 1;
-			return 0;
+		if(secondOrExpr.isEmpty()) {
+			this.tipo = first.getType();
+			return first;
 		}
 
-		return first;
+		resultado = first.getValue().toString();
+		for (int i = 0; i < lengthExprs; i++) {
+			resultado = resultado + secondOrExpr.get(i).eval(memory).getValue().toString();
+		}
+
+		this.tipo = Type.stringType;
+		return new StringExpr(resultado);
     }
 
 
 	public String genC() {
-		String firstString = this.firstAndExpr.genC();
-		
-		if (this.secondAndExpr != null) {
-			firstString = firstString + " || " + this.secondAndExpr.genC();
+		String firstString = "";
+		if(this.secondOrExpr.isEmpty()) {
+			firstString = this.firstOrExpr.genC();
+			return  firstString;
 		}
-		
+
+//		int lengthExprs = secondOrExpr.size();
+//		if (lengthExprs == 1) {
+//
+//
+//			for (int i = 0; i < lengthExprs; i++) {
+//				firstString += "plusPlus( ";
+//			}
+//
+//			firstString += firstOrExpr.genC();
+//
+//			for (int i = 0; i < lengthExprs; i++) {
+//				firstString += "," + secondOrExpr.get(i).genC() + ")";
+//			}
+//
+//			return firstString;
+//		}
+		firstString = "\"Not implemented yet\"\n";
+//
 		return firstString;
+	}
+
+	@Override
+	public Type getType() {
+		return this.tipo;
+	}
+
+	@Override
+	public Object getValue() {
+		return null;
+	}
+
+	@Override
+	public int compareTo(AbstractExpr aExpr) {
+		return 0;
 	}
 }

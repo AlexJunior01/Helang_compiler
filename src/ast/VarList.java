@@ -3,29 +3,29 @@ package ast;
 import java.util.List;
 import java.util.Map;
 
-/*
-    VarList ::= { "var" Int Ident ";" }
-*/
-public class VarList {
-	private List<String> ident;
 
-	public VarList(List<String> ident) {
+public class VarList extends Stat{
+	private List<Variable> ident;
+
+	public VarList(List<Variable> ident) {
 		super();
 		this.ident = ident;
 	}
 
-		public void eval(Map<String, Integer> memory) {
-			for (String identificador : ident) {
-				if(memory.get(identificador) != null)
+		public void eval(Map<String, Variable> memory) {
+			for (Variable var : ident) {
+				if(memory.get(var.getName()) != null)
 					throw new RuntimeException("Variavel ja declarada.");
 
-				memory.put(identificador, 0);
+				memory.put(var.getName(), var);
 			}
 		}
 
 		public void genC() {
-			for(String identificador: ident) {
-				System.out.println("int " + identificador + ";");
+			String tipo;
+			for(Variable identificador: ident) {
+				tipo = identificador.getType().getCname();
+				System.out.println(tipo + " " + identificador.getName() + ";");
 			}
 	
 		}

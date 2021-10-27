@@ -1,9 +1,5 @@
 package ast;
 
-	/*
-		AssignStat ::= Ident "=" Expr ";"
-	*/
-
 import java.util.Map;
 
 public class AssignStat extends Stat {
@@ -17,14 +13,20 @@ public class AssignStat extends Stat {
 	}
 
 	@Override
-	public void eval(Map<String, Integer> memory) {
-		if(memory.get(this.ident) == null) {
+	public void eval(Map<String, Variable> memory) {
+		Variable variavel = memory.get(this.ident);
+		if(variavel == null) {
 			throw new RuntimeException("Variável não declarada!");
 		}
 
-		int valor = expr.eval(memory);
+		AbstractExpr valor = expr.eval(memory);
 
-		memory.put(this.ident, valor);
+		if (variavel.getType() != valor.getType()) {
+			throw new RuntimeException("Tipos diferente");
+		}
+
+		variavel.setValue(valor.getValue());
+		memory.put(this.ident, variavel);
 	}
 
 	@Override

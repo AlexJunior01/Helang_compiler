@@ -2,10 +2,7 @@ package ast;
 
 import java.util.Map;
 
-/*
-		IfStat ::= "if" Expr StatList [
-		"else" StatList ]
-	*/
+
 public class IfStat extends Stat {
 	private Expr expr;
 	private StatList ifStatList;
@@ -19,10 +16,11 @@ public class IfStat extends Stat {
 	}
 
 	@Override
-	public void eval(Map<String, Integer> memory) {
-		int e = expr.eval(memory);
+	public void eval(Map<String, Variable> memory) {
+		AbstractExpr e = expr.eval(memory);
+		Boolean valor = (Boolean) e.getValue();
 
-		if (e != 0) {
+		if (valor) {
 			ifStatList.eval(memory);
 		} else if (elseStatList != null){
 			elseStatList.eval(memory);

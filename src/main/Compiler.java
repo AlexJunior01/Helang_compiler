@@ -1,5 +1,6 @@
 package main;
 
+import ast.*;
 import lexer.Symbol;
 
 import java.util.ArrayList;
@@ -7,66 +8,24 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-import ast.AddExpr;
-import ast.AndExpr;
-import ast.AssignStat;
-import ast.Expr;
-import ast.ForStat;
-import ast.IfStat;
-import ast.MultExpr;
-import ast.Numero;
-import ast.PrintStat;
-import ast.PrintlnStat;
-import ast.Program;
-import ast.RelExpr;
-import ast.SimpleExpr;
-import ast.Stat;
-import ast.StatList;
-import ast.VarList;
-import ast.WhileStat;
-
-/* 
-   		Program ::= VarList { Stat }
-		VarList ::= { "var" Int Ident ";" }
-		Stat ::= AssignStat | IfStat | ForStat | PrintStat |
-		PrintlnStat | WhileStat
-		AssignStat ::= Ident "=" Expr ";"
-		IfStat ::= "if" Expr StatList [
-		"else" StatList ]
-		ForStat ::= "for" Id "in" Expr ".." Expr StatList
-		PrintStat ::= "print" Expr ";"
-		PrintlnStat ::= "println" Expr ";"
-		StatList ::= "{" { Stat } "}"
-		WhileStat ::= "while" Expr StatList
-		Expr ::= AndExpr [ "||" AndExpr ]
-		AndExpr ::= RelExpr [ "&&" RelExpr ]
-		RelExpr ::= AddExpr [ RelOp AddExpr ]
-		AddExpr ::= MultExpr { AddOp MultExpr }
-		MultExpr ::= SimpleExpr { MultOp SimpleExpr }
-		SimpleExpr ::= Number |�(� Expr �)� | "!" SimpleExpr
-		| AddOp SimpleExpr | Ident
-		RelOp ::= �<� | �<=� | �>� | �>=�| �==� | �!=�
-		AddOp ::=  �+�| �-�
-		MultOp ::= �*� | �/� | �%�
-		Number ::=  [�+�|�-�] Digit { Digit }
-
- */
 
 public class Compiler {
     static private Map<String, Symbol> keywordsTable;
-
-    // this code will be executed only once for each program execution
     static {
         keywordsTable = new Hashtable<String, Symbol>();
         keywordsTable.put( "var", Symbol.VAR );
         keywordsTable.put( "Int", Symbol.INT );
+        keywordsTable.put( "String", Symbol.STRING );
+        keywordsTable.put( "Boolean", Symbol.BOOLEAN );
         keywordsTable.put( "if", Symbol.IF );
         keywordsTable.put( "else", Symbol.ELSE );
         keywordsTable.put( "for", Symbol.FOR );
         keywordsTable.put( "while", Symbol.WHILE );
-        keywordsTable.put( "print", Symbol.PRINT);
-        keywordsTable.put( "println", Symbol.PRINTLN);
-        keywordsTable.put( "in", Symbol.IN);
+        keywordsTable.put( "print", Symbol.PRINT );
+        keywordsTable.put( "println", Symbol.PRINTLN );
+        keywordsTable.put( "in", Symbol.IN );
+        keywordsTable.put( "true", Symbol.TRUE );
+        keywordsTable.put( "false", Symbol.FALSE );
     }
 	public void nextToken() {
 		char ch;
@@ -76,6 +35,20 @@ public class Compiler {
 		}
         if(ch == '\0') {
           token = Symbol.EOF;
+        } else if ( input[tokenPos] == '/' && input[tokenPos + 1] == '/' ) {
+            while ( input[tokenPos] != '\0'&& input[tokenPos] != '\n' )
+                tokenPos++;
+            nextToken();
+        } else if ( input[tokenPos] == '/' && input[tokenPos + 1] == '*' ) {
+            boolean flag = true;
+            tokenPos += 2;
+            while (flag) {
+                if (input[tokenPos] == '*' && input[tokenPos + 1] == '/')
+                    flag = false;
+                tokenPos++;
+            }
+            tokenPos += 2;
+            nextToken();
         } else {
             if(Character.isLetter(ch)){
                 StringBuffer ident = new StringBuffer();
@@ -145,6 +118,11 @@ public class Compiler {
                         error("Esperado token = '.'");
                         break;
                     case '+':
+                    	if (input[tokenPos +1 ] == '+'){
+                            token = Symbol.MAIS_MAIS;
+                            tokenPos += 2;
+                            break;
+                        }
                         token = Symbol.MAIS;
                         ++tokenPos;
                         break;
@@ -207,8 +185,20 @@ public class Compiler {
                         }
                         error("Token '&' esperado.");
                         break;
+                    case '"':
+                    	StringBuffer ident = new StringBuffer();
+                    	tokenPos++;
+                        while(input[tokenPos] != '"') {
+                        	ident.append(input[tokenPos]);
+                        	tokenPos++;
+                        }
+                        stringValue = ident.toString();
+                        token = Symbol.LITERAL_STRING;
+                        
+                        tokenPos++;
+                        break;
                     default:
-                        error("Invalida char");
+                        error("char invalido");
                 }
             }
         }
@@ -226,24 +216,19 @@ public class Compiler {
 
         return p;
     }
-    /*
-        Program ::= VarList { Stat }
-    */
+
+
     private Program program() {
-        VarList varlist = varlist();
+        Stat stat = stat();
         
-        List<Stat> stat = new ArrayList<>();
+        List<Stat> statList = new ArrayList<>();
 
         while(token != Symbol.EOF) {
-            stat.add(stat());
+            statList.add(stat());
         }
-        return new Program(varlist, stat);
+        return new Program(stat, statList);
     }
 
-    /*
-        Stat ::= AssignStat | IfStat | ForStat | PrintStat |
-            		PrintlnStat | WhileStat
-    */
     
     private Stat stat() {
         if(token == Symbol.IDENT) {
@@ -258,6 +243,8 @@ public class Compiler {
         	return printlnStat();
         } else if(token == Symbol.WHILE) {
         	return whileStat();
+        } else if(token == Symbol.VAR) {
+            return varlist();
         } else {
             error("Stat esperado");
             return null;
@@ -273,9 +260,6 @@ public class Compiler {
         return new WhileStat(expr, statList);
     }
 
-    /*
-        PrintlnStat ::= "println" Expr ";"
-    */
     private PrintlnStat printlnStat() {
         nextToken();
         Expr expr = expr();
@@ -288,9 +272,7 @@ public class Compiler {
         return new PrintlnStat(expr);
     }
 
-    /*
-        PrintStat ::= "print" Expr ";"
-    */
+
     private PrintStat printStat() {
         nextToken();
         Expr expr = expr();
@@ -303,9 +285,7 @@ public class Compiler {
         return new PrintStat(expr);
     }
 
-    /*
-        ForStat ::= "for" Ident "in" Expr ".." Expr StatList
-    */
+
     private ForStat forStat() {
         nextToken();
 
@@ -332,10 +312,7 @@ public class Compiler {
         return new ForStat(iterador, startExpr, endExpr, statlist);
     }
 
-    /*
-        IfStat ::= "if" Expr StatList [
-                    "else" StatList ]
-     */
+
     private IfStat ifStat() {
         nextToken();
         Expr expr = expr();
@@ -352,9 +329,7 @@ public class Compiler {
         return new IfStat(expr, ifStatList, elseStatList);
     }
 
-    /*
-        StatList ::= "{" { Stat } "}"
-    */
+
     private StatList statList() {
         List<Stat> stats = new ArrayList<>();
         if(token != Symbol.ABRE_CHAVES) {
@@ -368,9 +343,7 @@ public class Compiler {
         return new StatList(stats);
     }
 
-    /*
-        AssignStat ::= Ident "=" Expr ";"
-    */
+
     private AssignStat assignStat() {
         String ident = stringValue;
         nextToken();
@@ -389,24 +362,27 @@ public class Compiler {
         return new AssignStat(ident, expr);
     }
 
-    /*
-        VarList ::= { "var" Int Ident ";" }
-    */
+
     private VarList varlist() {
-    	List<String> identList = new ArrayList<>();
+    	List<Variable> identList = new ArrayList<>();
+        Type tipo = null;
         while (token == Symbol.VAR) {
             nextToken();
 
-            if(token != Symbol.INT) {
-                error("'Int' esperado.");
+            if(token != Symbol.INT && token != Symbol.STRING && token != Symbol.BOOLEAN) {
+                error("Tipo não reconhecido esperado.");
             }
+
+            if(token == Symbol.STRING) tipo = Type.stringType;
+            if(token == Symbol.BOOLEAN) tipo = Type.booleanType;
+            if(token == Symbol.INT) tipo = Type.integerType;
             nextToken();
 
             if(token != Symbol.IDENT) {
                 error("Identificador de variável esperado.");
             }
             String ident = stringValue;
-            identList.add(ident);
+            identList.add(new Variable(ident, tipo));
             
             nextToken();
 
@@ -418,24 +394,33 @@ public class Compiler {
         return new VarList(identList);
     }
     
-    /*
-    	Expr ::= AndExpr [ "||" AndExpr ]
-    */
-    private Expr expr() {
-    	AndExpr secondAndExpr = null;
-    	AndExpr firstAndExpr = andExpr();
 
-    	if(token == Symbol.OR) {
+    private Expr expr() {
+    	List<OrExpr> secondOrExpr = new ArrayList<>();
+    	OrExpr firstOrExpr = orExpr();
+
+    	while(token == Symbol.MAIS_MAIS) {
             nextToken();
-            secondAndExpr = andExpr();
+            secondOrExpr.add(orExpr());
     	}
     	
-    	return new Expr(firstAndExpr, secondAndExpr);
+    	return new Expr(firstOrExpr, secondOrExpr);
     }
     
-    /*
-     	AndExpr ::= RelExpr [ "&&" RelExpr ]
-    */
+
+    private OrExpr orExpr() {
+    	AndExpr secondAndExpr = null;
+        AndExpr firstAndExpr = andExpr();
+
+        if(token == Symbol.OR) {
+            nextToken();
+            secondAndExpr = andExpr();
+        }
+        
+        return new OrExpr(firstAndExpr, secondAndExpr);
+	}
+
+
     private AndExpr andExpr() {
     	RelExpr secondRel = null;
     	RelExpr firstRelExpr = relExpr();
@@ -448,10 +433,7 @@ public class Compiler {
 		return new AndExpr(firstRelExpr, secondRel);
 	}
     
-    /*
-    	RelExpr ::= AddExpr [ RelOp AddExpr ]
-    */
-    
+
 	private RelExpr relExpr() {
 		AddExpr secondAddExpr = null;
 		Symbol relOp = null;
@@ -468,9 +450,7 @@ public class Compiler {
 		return new RelExpr(firstAddExpr, relOp, secondAddExpr);
 	}
 	
-	/*
-		AddExpr ::= MultExpr { AddOp MultExpr }
-	*/
+
 	private AddExpr addExpr() {
 		List<MultExpr> secondMultExpr = new ArrayList<>();
 		List<Symbol> addOp = new ArrayList<>();
@@ -485,9 +465,7 @@ public class Compiler {
 		return new AddExpr(firstMultExpr, addOp, secondMultExpr);
 	}
 	
-	/*
-		MultExpr ::= SimpleExpr { MultOp SimpleExpr }
-	*/
+
 	private MultExpr multExpr() {
 		List<SimpleExpr> secondSimpleExpr = new ArrayList<>();
 		List<Symbol> multOp = new ArrayList<>();
@@ -502,10 +480,7 @@ public class Compiler {
 		return new MultExpr(firstSimpleExpr, multOp, secondSimpleExpr);
 	}
 	
-	/*
-		SimpleExpr ::= Number | �(� Expr �)� | "!" SimpleExpr | AddOp SimpleExpr | Ident
-	*/
-	
+
 	private SimpleExpr simpleExpr() {
 		
 		Numero number = null;
@@ -513,8 +488,10 @@ public class Compiler {
 	    SimpleExpr simpleExpr = null;
 	    Symbol addOp = null;
 	    String ident = null;
-		
+	    String literalString = null;
+	    Boolean boolVar = null;
 	    
+		
 	    if(token == Symbol.NUMBER) {
 	    	number = number(addOp);
 		} else if(token == Symbol.ABRE_PARANTESES) {
@@ -539,11 +516,20 @@ public class Compiler {
 		} else if(token == Symbol.IDENT) {
 			ident = this.stringValue;
             nextToken();
+		} else if(token == Symbol.TRUE) {
+			boolVar = true;
+            nextToken();
+		} else if(token == Symbol.FALSE) {
+			boolVar = false;
+            nextToken();
+		} else if(token == Symbol.LITERAL_STRING) {
+			literalString = this.stringValue;
+            nextToken();
 		} else {
 			error("simpleExpr esperado");
 		}
 	    
-    	return new SimpleExpr(number, expr, simpleExpr, addOp, ident);
+    	return new SimpleExpr(number, expr, simpleExpr, addOp, literalString, ident, boolVar);
 	}
 
     private Numero number(Symbol addOp) {

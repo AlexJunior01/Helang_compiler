@@ -5,7 +5,9 @@ public enum Symbol {
 	IDENT("ident"),
     NUMBER("Number"),
 	VAR("Var"),
-	INT("Int"), 
+	INT("Int"),
+	STRING("String"),
+	BOOLEAN("boolean"),
 	PONTO_VIRGULA(";"),
 	ATRIBUICAO("="), 
 	IF("if"), 
@@ -27,12 +29,16 @@ public enum Symbol {
 	MENOR_IGUAL("<="),
 	MAIOR(">"),
 	MAIOR_IGUAL(">="),
+	MAIS_MAIS("++"),
 	IGUAL("=="),
 	DIFERENTE("!="),
 	MAIS("+"),
 	MENOS("-"),
 	MULTIPLICACAO("*"),
 	DIVISAO("/"), 
+	LITERAL_STRING("literalString"),
+	TRUE("true"),
+	FALSE("false"),
 	MOD("%");
 	
     Symbol(String name) {

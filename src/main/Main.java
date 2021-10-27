@@ -1,13 +1,13 @@
 package main;
 
-import ast.Program;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
-public class Main {
+import ast.Program;
+
+public class Main {		
 	
 	public static void main( String []args ) {
 		File file;
@@ -52,6 +52,7 @@ public class Main {
 
 			Compiler compiler = new Compiler();
 			Program p = compiler.compile(input);
+	
 
 			if (option.equals("-gen")){
 				p.genC();

@@ -4,29 +4,29 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-	/*
-		Program ::= VarList { Stat }
-	*/
-
 public class Program {
 	
-	private VarList varlist;
-	private List<Stat> stat;
+	private Stat stat;
+	private List<Stat> statList;
 	
-	public Program(VarList varlist, List<Stat> stat) {
-			super();
-			this.varlist = varlist;
-			this.stat = stat;
+	public Program(Stat stat, List<Stat> statList) {
+		super();
+		this.stat = stat;
+		this.statList = statList;
 	}
-	
+
 	public void genC() {
-		this.run(false);
-		 System.out.println("#include <stdio.h>\n");
+		 this.run(false);
+		 System.out.println("#include <stdio.h>");
+		 System.out.println("#include <stdbool.h>");
+		 System.out.println("char* plusPlus(int a, int b) {\n" +
+				 "\treturn \"Not implemented yet\";\n" +
+				 "}");
 	     System.out.println("void main() {");
 	     
-	     this.varlist.genC();
+	     this.stat.genC();
 	     
-	     for(Stat oneStat: stat) {
+	     for(Stat oneStat: statList) {
 	    	 oneStat.genC();
 	     }
 	     
@@ -34,19 +34,17 @@ public class Program {
 	}
 
 	public void run(boolean print) {
-		/*
-			Nos adicionamos a variavel print para conseguirmos controlar quando o run ira printar os resultados ou nao.
-			Fizemos isso pois queriamos utilizar o run() antes de gerar o codigo em C para validar se a entrada e um
-			programa válido para a gramatica.
-		 */
 
-		Map<String, Integer> memory = new HashMap<>();
+		Map<String, Variable> memory = new HashMap<>();
 
-		if (print)
-			memory.put("PRINT_ON_EVAL", 1);
-		this.varlist.eval(memory);
+		if (print) {
+			Variable printar = new Variable("PRINT_ON_EVAL", Type.booleanType);
+			memory.put("PRINT_ON_EVAL", printar);
+		}
 
-		for (Stat oneStat : this.stat) {
+		this.stat.eval(memory);
+
+		for (Stat oneStat : this.statList) {
 			oneStat.eval(memory);
 		}
 	}
