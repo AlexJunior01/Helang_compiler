@@ -5,12 +5,13 @@ import java.util.List;
 import java.util.Map;
 
 
-public class Expr {
+public class Expr extends AbstractExpr{
 	private OrExpr firstOrExpr;
 	private List<OrExpr> secondOrExpr;
-	
+	private Type tipo;
 
-    public Expr(OrExpr firstOrExpr, List<OrExpr> secondOrExpr) {
+
+	public Expr(OrExpr firstOrExpr, List<OrExpr> secondOrExpr) {
 		super();
 		this.firstOrExpr = firstOrExpr;
 		this.secondOrExpr = secondOrExpr;
@@ -23,6 +24,7 @@ public class Expr {
 		int lengthExprs = secondOrExpr.size();
 
 		if(secondOrExpr.isEmpty()) {
+			this.tipo = first.getType();
 			return first;
 		}
 
@@ -31,6 +33,7 @@ public class Expr {
 			resultado = resultado + secondOrExpr.get(i).eval(memory).getValue().toString();
 		}
 
+		this.tipo = Type.stringType;
 		return new StringExpr(resultado);
     }
 
@@ -43,5 +46,20 @@ public class Expr {
 		} else {
 			return firstString;
 		}
+	}
+
+	@Override
+	public Type getType() {
+		return this.tipo;
+	}
+
+	@Override
+	public Object getValue() {
+		return null;
+	}
+
+	@Override
+	public int compareTo(AbstractExpr aExpr) {
+		return 0;
 	}
 }

@@ -3,11 +3,12 @@ package ast;
 import java.util.Map;
 
 
-public class OrExpr {
+public class OrExpr extends AbstractExpr{
 	private AndExpr firstAndExpr;
 	private AndExpr secondAndExpr;
-	
-	
+	private Type tipo;
+
+
 	public OrExpr(AndExpr firstAndExpr, AndExpr secondAndExpr) {
 		super();
 		this.firstAndExpr = firstAndExpr;
@@ -21,11 +22,13 @@ public class OrExpr {
 
 		if (this.secondAndExpr != null) {
 			second = this.secondAndExpr.eval(memory);
+			this.tipo = Type.booleanType;
 			if ((Boolean) first.getValue() || (Boolean) second.getValue())
 				return BooleanExpr.TRUE;
 			return BooleanExpr.FALSE;
 		}
 
+		this.tipo = first.getType();
 		return first;
 	}
 
@@ -37,5 +40,20 @@ public class OrExpr {
 		}
 		
 		return firstString;
+	}
+
+	@Override
+	public Type getType() {
+		return this.tipo;
+	}
+
+	@Override
+	public Object getValue() {
+		return null;
+	}
+
+	@Override
+	public int compareTo(AbstractExpr aExpr) {
+		return 0;
 	}
 }

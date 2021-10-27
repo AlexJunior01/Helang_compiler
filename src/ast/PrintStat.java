@@ -21,6 +21,11 @@ public class PrintStat extends Stat {
 
 	@Override
 	public void genC() {
-		System.out.println("printf(\"%d\", " + expr.genC() + ");");
+		if (expr.getType().equals(Type.booleanType))
+			System.out.println("printf(\"%s\", \" + expr.genC() + \"? \"true\" : \"false\");\"");
+		else if (expr.getType().equals(Type.integerType))
+			System.out.println("printf(\"%d\", " + expr.genC() + ");");
+		else
+			System.out.println("printf(\"%s\", " + expr.genC() + ");");
 	}
 }

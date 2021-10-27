@@ -16,7 +16,7 @@ public class Program {
 	}
 
 	public void genC() {
-		this.run(false);
+		 this.run(false);
 		 System.out.println("#include <stdio.h>\n");
 		 System.out.println("#include <stdbool.h>\n");
 	     System.out.println("void main() {");

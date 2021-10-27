@@ -5,7 +5,7 @@ import lexer.Symbol;
 import java.util.Map;
 
 
-public class SimpleExpr {
+public class SimpleExpr  extends AbstractExpr{
 	private Numero number;
 	private Expr expr;
 	private SimpleExpr simpleExpr;
@@ -13,7 +13,7 @@ public class SimpleExpr {
 	private String ident;
 	private String literalString;
 	private Boolean boolVar;
-	
+	private Type tipo;
 	
 	public SimpleExpr(Numero number, Expr expr, SimpleExpr simpleExpr, Symbol addOp, String literalString, String ident, Boolean boolVar) {
 		super();
@@ -31,6 +31,7 @@ public class SimpleExpr {
 		Variable variavel;
 
 		if (number != null) {
+			this.tipo = Type.integerType;
 			return number.eval(memory);
 		} else if (expr != null) {
 			return expr.eval(memory);
@@ -51,15 +52,20 @@ public class SimpleExpr {
 			}
 			variavel = memory.get(ident);
 			if (variavel.getType() == Type.booleanType) {
+				this.tipo = Type.booleanType;
 				return new BooleanExpr((Boolean) variavel.getValor());
 			} else if (variavel.getType() == Type.integerType) {
+				this.tipo = Type.integerType;
 				return new IntegerExpr((Integer) variavel.getValor());
 			} else {
+				this.tipo = Type.stringType;
 				return new StringExpr((String) variavel.getValor());
 			}
 		} else if(literalString != null) {
+			this.tipo = Type.stringType;
 			return new StringExpr(literalString);
 		} else if(boolVar != null) {
+			this.tipo = Type.booleanType;
 			return new BooleanExpr(boolVar);
 		} else {
 			throw new RuntimeException("Erro interno dentro do SimpleExpre");
@@ -85,5 +91,20 @@ public class SimpleExpr {
 		} else {
 			throw new RuntimeException("Erro interno dentro do SimpleExprE");
 		}
+	}
+
+	@Override
+	public Type getType() {
+		return this.tipo;
+	}
+
+	@Override
+	public Object getValue() {
+		return null;
+	}
+
+	@Override
+	public int compareTo(AbstractExpr aExpr) {
+		return 0;
 	}
 }

@@ -6,11 +6,12 @@ import java.util.List;
 import java.util.Map;
 
 
-public class MultExpr {
+public class MultExpr extends AbstractExpr{
 	private SimpleExpr firstSimpleExpr;
 	private List<Symbol> multOp;
 	private List<SimpleExpr> secondSimpleExpr;
-	
+	private Type tipo;
+
 	public MultExpr(SimpleExpr firstSimpleExpr, List<Symbol> multOp, List<SimpleExpr> secondSimpleExpr) {
 		super();
 		this.firstSimpleExpr = firstSimpleExpr;
@@ -22,6 +23,7 @@ public class MultExpr {
 		AbstractExpr first = firstSimpleExpr.eval(memory);
 		int resultado = 0;
 		if(this.multOp.isEmpty()) {
+			this.tipo = first.getType();
 			return first;
 		}
 
@@ -42,6 +44,7 @@ public class MultExpr {
 			else
 				throw new RuntimeException("MultOp esperado");
 		}
+		this.tipo = Type.integerType;
 		return new IntegerExpr(resultado);
     }
 
@@ -67,5 +70,20 @@ public class MultExpr {
 			firstString = firstString + " " + multOp.get(i) + " " + secondSimpleExpr.get(i).genC();
 		}
 		return firstString;
+	}
+
+	@Override
+	public Type getType() {
+		return this.tipo;
+	}
+
+	@Override
+	public Object getValue() {
+		return null;
+	}
+
+	@Override
+	public int compareTo(AbstractExpr aExpr) {
+		return 0;
 	}
 }
