@@ -31,6 +31,7 @@ public class AssignStat extends Stat {
 
 	@Override
 	public void genC() {
+		System.out.println("strcpy(buffer, \"\\0\");");
 		System.out.println(ident + " = " + expr.genC() + ";");
 	}
 }

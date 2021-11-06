@@ -22,6 +22,7 @@ public class PrintlnStat extends Stat {
 
 	@Override
 	public void genC() {
+		System.out.println("strcpy(buffer, \"\\0\");");
 		if (expr.getType() == Type.booleanType)
 			System.out.println("printf(\"%s\\n\", \" + expr.genC() + \"? \"true\" : \"false\");\"");
 		else if (expr.getType() == Type.integerType)

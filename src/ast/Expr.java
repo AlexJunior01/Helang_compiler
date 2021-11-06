@@ -45,25 +45,28 @@ public class Expr extends AbstractExpr{
 			return  firstString;
 		}
 
-//		int lengthExprs = secondOrExpr.size();
-//		if (lengthExprs == 1) {
-//
-//
-//			for (int i = 0; i < lengthExprs; i++) {
-//				firstString += "plusPlus( ";
-//			}
-//
-//			firstString += firstOrExpr.genC();
-//
-//			for (int i = 0; i < lengthExprs; i++) {
-//				firstString += "," + secondOrExpr.get(i).genC() + ")";
-//			}
-//
-//			return firstString;
-//		}
-		firstString = "\"Not implemented yet\"\n";
-//
+		int lengthExprs = secondOrExpr.size();
+
+		for (int i = 0; i < lengthExprs; i++) {
+			firstString += "plusPlus( ";
+		}
+
+		firstString += this.genCType(firstOrExpr);
+
+		for (int i = 0; i < lengthExprs; i++) {
+			firstString += ", " + this.genCType(secondOrExpr.get(i)) + ")";
+		}
+
 		return firstString;
+	}
+
+	private String genCType(OrExpr orExpr) {
+		if(orExpr.getType() == Type.booleanType) {
+			return "castBoolean(" + orExpr.genC() + ")";
+		} else if (orExpr.getType() == Type.integerType) {
+			return "castInteger(" + orExpr.genC() + ")";
+		} else
+			return orExpr.genC();
 	}
 
 	@Override

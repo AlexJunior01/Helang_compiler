@@ -25,6 +25,14 @@ public class IfStat extends Stat {
 		} else if (elseStatList != null){
 			elseStatList.eval(memory);
 		}
+
+		if(memory.get("PRINT_ON_EVAL") == null){
+			ifStatList.eval(memory);
+
+			if (elseStatList != null){
+				elseStatList.eval(memory);
+			}
+		}
 	}
 
 	@Override
